@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package domain;
+
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+  import: "domain.WalletTypes.given"
+};
+
+// Wallet Commands
+message AddTokens {
+  string id = 1;
+  string idempotency_key = 2;
+  int64 amount = 3 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  string reply_to = 4;
+}
+
+message ReserveTokens {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  int64 ttl_seconds = 5;
+  string reply_to = 6;
+}
+
+message SpendTokens {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  string reply_to = 4;
+  map<string, string> metadata = 5;
+}
+
+message ReleaseTokens {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  string reply_to = 4;
+}
+
+// Wallet Events
+message TokensAdded {
+  string id = 1;
+  string idempotency_key = 2;
+  int64 amount = 3 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  int64 timestamp = 4;
+}
+
+message TokensReserved {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  int64 timestamp = 5;
+  int64 expires_at_ms = 6;
+}
+
+message TokensSpent {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  int64 timestamp = 5;
+  map<string, string> metadata = 6;
+}
+
+message TokensReleased {
+  string id = 1;
+  string idempotency_key = 2;
+  string hold_id = 3;
+  int64 timestamp = 4;
+}
+
+// Wallet State
+message ProcessedCommand {
+  string command_type = 1;
+  int64 amount = 2; // Stores amount if applicable, else 0
+  int64 timestamp = 3;
+}
+
+message WalletState {
+  int64 available_balance = 1 [(scalapb.field).type = "domain.WalletTypes.Balance"];
+  int64 reserved_balance = 2 [(scalapb.field).type = "domain.WalletTypes.Balance"];
+  map<string, int64> active_holds = 3 [(scalapb.field).value_type = "domain.WalletTypes.TransactionAmount"];
+  map<string, ProcessedCommand> recent_idempotency_keys = 4;
+  int64 last_event_timestamp = 5;
+}
+
+// Wallet Responses
+message WalletSuccess {
+  string id = 1;
+  int64 available_balance = 2 [(scalapb.field).type = "domain.WalletTypes.Balance"];
+  int64 reserved_balance = 3 [(scalapb.field).type = "domain.WalletTypes.Balance"];
+}
+
+message WalletFailure {
+  string id = 1;
+  string reason = 2;
+  string code = 3;
+}

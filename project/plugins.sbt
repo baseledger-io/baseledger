@@ -1,0 +1,4 @@
+addSbtPlugin("org.scalameta"         % "sbt-scalafmt"         % "2.4.6")
+addSbtPlugin("com.github.sbt"        % "sbt-native-packager"  % "1.10.0")
+addSbtPlugin("software.purpledragon" % "sbt-dependency-lock"  % "1.5.1")
+addSbtPlugin("ch.epfl.scala"         % "sbt-scalafix"         % "0.12.1")

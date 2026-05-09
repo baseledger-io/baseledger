@@ -1,0 +1,991 @@
+{
+  "lockVersion" : 1,
+  "timestamp" : "2026-05-09T05:10:37.992360443Z",
+  "configurations" : [
+    "compile",
+    "optional",
+    "protobuf",
+    "provided",
+    "runtime",
+    "scalafix",
+    "test"
+  ],
+  "dependencies" : [
+    {
+      "org" : "at.yawk.lz4",
+      "name" : "lz4-java",
+      "version" : "1.10.4",
+      "artifacts" : [
+        {
+          "name" : "lz4-java.jar",
+          "hash" : "sha1:b12a116fa35ebe5db4c51ee4079a4ebf527d8bf0"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "ch.qos.logback",
+      "name" : "logback-classic",
+      "version" : "1.5.32",
+      "artifacts" : [
+        {
+          "name" : "logback-classic.jar",
+          "hash" : "sha1:2b1042c50f508f2eb402bd4d22ccbdf94cc37d2e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "ch.qos.logback",
+      "name" : "logback-core",
+      "version" : "1.5.32",
+      "artifacts" : [
+        {
+          "name" : "logback-core.jar",
+          "hash" : "sha1:fdfb3ff9a842303d4a95207294a6c6bc64e2605d"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.core",
+      "name" : "jackson-annotations",
+      "version" : "2.21",
+      "artifacts" : [
+        {
+          "name" : "jackson-annotations.jar",
+          "hash" : "sha1:b1bc1868bf02dc0bd6c7836257a036a331005309"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.core",
+      "name" : "jackson-core",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-core.jar",
+          "hash" : "sha1:7d11eac823392f28d8ee7bda77eaadfccbab83e5"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.core",
+      "name" : "jackson-databind",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-databind.jar",
+          "hash" : "sha1:71ab8ff75b4fd74afdee0004173fdd15de1d6a28"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.dataformat",
+      "name" : "jackson-dataformat-cbor",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-dataformat-cbor.jar",
+          "hash" : "sha1:0dd1621412ece3c25b7293e707a18ab49ed4e8cf"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.datatype",
+      "name" : "jackson-datatype-jdk8",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-datatype-jdk8.jar",
+          "hash" : "sha1:0222d829578930f27afa8d9b6842393824e2eb38"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.datatype",
+      "name" : "jackson-datatype-jsr310",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-datatype-jsr310.jar",
+          "hash" : "sha1:65b0cef8d997561541b7db6bbb1f6d42913b60e0"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.module",
+      "name" : "jackson-module-parameter-names",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-module-parameter-names.jar",
+          "hash" : "sha1:a9969b397887ef34f229808afc87832098221b8f"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.fasterxml.jackson.module",
+      "name" : "jackson-module-scala_3",
+      "version" : "2.21.2",
+      "artifacts" : [
+        {
+          "name" : "jackson-module-scala_3.jar",
+          "hash" : "sha1:ee5ed7925ef5923abb04e335d85c425adde21e0f"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.jnr",
+      "name" : "jffi",
+      "version" : "1.3.13",
+      "artifacts" : [
+        {
+          "name" : "jffi.jar",
+          "hash" : "sha1:861b79314b8cef27f506c007edb78bf1ad0df77c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.jnr",
+      "name" : "jnr-a64asm",
+      "version" : "1.0.0",
+      "artifacts" : [
+        {
+          "name" : "jnr-a64asm.jar",
+          "hash" : "sha1:0a1cb8dbe71b5a6a0288043c3ba3ca64545be165"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.jnr",
+      "name" : "jnr-constants",
+      "version" : "0.10.4",
+      "artifacts" : [
+        {
+          "name" : "jnr-constants.jar",
+          "hash" : "sha1:09f6f23763bf40ea7b56391791f574174914430a"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.jnr",
+      "name" : "jnr-ffi",
+      "version" : "2.2.17",
+      "artifacts" : [
+        {
+          "name" : "jnr-ffi.jar",
+          "hash" : "sha1:3b3a375fb3509a2d2014687d5e8d6b3881a3614e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.jnr",
+      "name" : "jnr-x86asm",
+      "version" : "1.0.2",
+      "artifacts" : [
+        {
+          "name" : "jnr-x86asm.jar",
+          "hash" : "sha1:006936bbd6c5b235665d87bd450f5e13b52d4b48"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.google.protobuf",
+      "name" : "protobuf-java",
+      "version" : "3.19.2",
+      "artifacts" : [
+        {
+          "name" : "protobuf-java.jar",
+          "hash" : "sha1:e958ce38f96b612d3819ff1c753d4d70609aea74"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "protobuf",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.hierynomus",
+      "name" : "asn-one",
+      "version" : "0.6.0",
+      "artifacts" : [
+        {
+          "name" : "asn-one.jar",
+          "hash" : "sha1:7f6141541e0a4d3ae0b02c901c2c1e9a772eb3d7"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.thesamet.scalapb",
+      "name" : "lenses_3",
+      "version" : "0.11.11",
+      "artifacts" : [
+        {
+          "name" : "lenses_3.jar",
+          "hash" : "sha1:d5c02b213073edfc9cfd6fbac39abef800460f1e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "protobuf",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.thesamet.scalapb",
+      "name" : "scalapb-runtime_3",
+      "version" : "0.11.11",
+      "artifacts" : [
+        {
+          "name" : "scalapb-runtime_3.jar",
+          "hash" : "sha1:91080ec7b4b715fca7bdd4a317ad235ab7d1d850"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "protobuf",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.thoughtworks.paranamer",
+      "name" : "paranamer",
+      "version" : "2.8.3",
+      "artifacts" : [
+        {
+          "name" : "paranamer.jar",
+          "hash" : "sha1:75ae4eb129574b7fc0df5fa8808d7ed625be815d"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.typesafe",
+      "name" : "config",
+      "version" : "1.4.6",
+      "artifacts" : [
+        {
+          "name" : "config.jar",
+          "hash" : "sha1:cdf54f700375ae6bd3de8649559b01653b0bead2"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.typesafe",
+      "name" : "ssl-config-core_3",
+      "version" : "0.7.1",
+      "artifacts" : [
+        {
+          "name" : "ssl-config-core_3.jar",
+          "hash" : "sha1:fa7421673a8a3d4d26949b3869e18a060b559f30"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.baseledger",
+      "name" : "common_3",
+      "version" : "0.1.0",
+      "artifacts" : [
+      ],
+      "configurations" : [
+        "compile",
+        "optional",
+        "protobuf",
+        "provided",
+        "runtime",
+        "scalafix",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.github.iltotore",
+      "name" : "iron_3",
+      "version" : "3.3.0",
+      "artifacts" : [
+        {
+          "name" : "iron_3.jar",
+          "hash" : "sha1:609607583efda3aa6fcbb01f1df99ce6d9ae1fbb"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "net.logstash.logback",
+      "name" : "logstash-logback-encoder",
+      "version" : "9.0",
+      "artifacts" : [
+        {
+          "name" : "logstash-logback-encoder.jar",
+          "hash" : "sha1:3a130930dcc447f399a491e85fdf3998685f1091"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.agrona",
+      "name" : "agrona",
+      "version" : "1.22.0",
+      "artifacts" : [
+        {
+          "name" : "agrona.jar",
+          "hash" : "sha1:fef53f93f14d74fecb2a7cdbce9a62c7608c214c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-actor-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-actor-typed_3.jar",
+          "hash" : "sha1:05e34dbd2a8a2761a20894891d9650241bddf87a"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-actor_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-actor_3.jar",
+          "hash" : "sha1:746841d8fe8e55a56451b3494eb1e4543e7962cf"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-cluster-sharding-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-cluster-sharding-typed_3.jar",
+          "hash" : "sha1:faa25444fd730ca68145c0c8009e66b9e153e9c9"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-cluster-sharding_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-cluster-sharding_3.jar",
+          "hash" : "sha1:802f62cb9d80f71bab429c6d8588df8599dc6227"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-cluster-tools_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-cluster-tools_3.jar",
+          "hash" : "sha1:cfbca8b5493dbccc0afdf716282b826789437974"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-cluster-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-cluster-typed_3.jar",
+          "hash" : "sha1:ca6dea05b48e3ed2ab03076d1302ba62769c4b64"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-cluster_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-cluster_3.jar",
+          "hash" : "sha1:c3933dc59bb9a11e1925517fa8e9703367dee7db"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-coordination_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-coordination_3.jar",
+          "hash" : "sha1:1f0032e75d41d49c1d4577f4a79c5e4ecc6d852e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-distributed-data_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-distributed-data_3.jar",
+          "hash" : "sha1:6a8afa0b8068809179b987615a74757130409ce0"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-persistence-query_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-persistence-query_3.jar",
+          "hash" : "sha1:88d6ecdacf09cbf2460b45893a5cd3ff863d88ad"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-persistence-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-persistence-typed_3.jar",
+          "hash" : "sha1:77d4fee81719f5236d8604e49fa9c4a09df8e733"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-persistence_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-persistence_3.jar",
+          "hash" : "sha1:576dfe5ed0cefb96d84c40a4d3a178e52500bca0"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-pki_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-pki_3.jar",
+          "hash" : "sha1:3744f4fee475cb5e5002212beece39a917f9a521"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-protobuf-v3_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-protobuf-v3_3.jar",
+          "hash" : "sha1:b0425a0a7a030f579172780f449a4b91205ea4f6"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-remote_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-remote_3.jar",
+          "hash" : "sha1:bf0055790aa96cd9a05a3a8382e77436fa4ed0a0"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-serialization-jackson_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-serialization-jackson_3.jar",
+          "hash" : "sha1:370156e90404204dacf0b12b52d6249c21dfd87a"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-slf4j_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-slf4j_3.jar",
+          "hash" : "sha1:8c9c0d0c93e8dd6fe8bb78bcab9d2fdb85bfe2b5"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-stream-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-stream-typed_3.jar",
+          "hash" : "sha1:c2dcc7d2e3047538818ada41902df164ca8fd81e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-stream_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-stream_3.jar",
+          "hash" : "sha1:c5897c0015d63af570ec3ab5a986275c1876f56d"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.lmdbjava",
+      "name" : "lmdbjava",
+      "version" : "0.9.1",
+      "artifacts" : [
+        {
+          "name" : "lmdbjava.jar",
+          "hash" : "sha1:df36afd172b8b0836f6a862e249d1ba555c5c2b7"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.ow2.asm",
+      "name" : "asm",
+      "version" : "9.7.1",
+      "artifacts" : [
+        {
+          "name" : "asm.jar",
+          "hash" : "sha1:f0ed132a49244b042cd0e15702ab9f2ce3cc8436"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.ow2.asm",
+      "name" : "asm-analysis",
+      "version" : "9.7.1",
+      "artifacts" : [
+        {
+          "name" : "asm-analysis.jar",
+          "hash" : "sha1:f97a3b319f0ed6a8cd944dc79060d3912a28985f"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.ow2.asm",
+      "name" : "asm-commons",
+      "version" : "9.7.1",
+      "artifacts" : [
+        {
+          "name" : "asm-commons.jar",
+          "hash" : "sha1:406c6a2225cfe1819f102a161e54cc16a5c24f75"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.ow2.asm",
+      "name" : "asm-tree",
+      "version" : "9.7.1",
+      "artifacts" : [
+        {
+          "name" : "asm-tree.jar",
+          "hash" : "sha1:3a53139787663b139de76b627fca0084ab60d32c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.ow2.asm",
+      "name" : "asm-util",
+      "version" : "9.7.1",
+      "artifacts" : [
+        {
+          "name" : "asm-util.jar",
+          "hash" : "sha1:9e23359b598ec6b74b23e53110dd5c577adf2243"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.reactivestreams",
+      "name" : "reactive-streams",
+      "version" : "1.0.4",
+      "artifacts" : [
+        {
+          "name" : "reactive-streams.jar",
+          "hash" : "sha1:3864a1320d97d7b045f729a326e1e077661f31b7"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scala-lang",
+      "name" : "scala-library",
+      "version" : "2.13.16",
+      "artifacts" : [
+        {
+          "name" : "scala-library.jar",
+          "hash" : "sha1:9e064d9304904fd7b6bd2b55a9e601b8c1c9006e"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scala-lang",
+      "name" : "scala-library",
+      "version" : "2.13.8",
+      "artifacts" : [
+        {
+          "name" : "scala-library.jar",
+          "hash" : "sha1:5a865f03a794b27e6491740c4c419a19e4511a3d"
+        }
+      ],
+      "configurations" : [
+        "protobuf"
+      ]
+    },
+    {
+      "org" : "org.scala-lang",
+      "name" : "scala3-library_3",
+      "version" : "3.1.2",
+      "artifacts" : [
+        {
+          "name" : "scala3-library_3.jar",
+          "hash" : "sha1:709b414a7924204b2dc0dd4a9740c2d3be3a5ef5"
+        }
+      ],
+      "configurations" : [
+        "protobuf"
+      ]
+    },
+    {
+      "org" : "org.scala-lang",
+      "name" : "scala3-library_3",
+      "version" : "3.3.7",
+      "artifacts" : [
+        {
+          "name" : "scala3-library_3.jar",
+          "hash" : "sha1:8a71235e7312077588af781a4d38cfc346f747eb"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scala-lang.modules",
+      "name" : "scala-collection-compat_3",
+      "version" : "2.7.0",
+      "artifacts" : [
+        {
+          "name" : "scala-collection-compat_3.jar",
+          "hash" : "sha1:97ce321fee57215497079002da02921acd3b76b4"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "protobuf",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.slf4j",
+      "name" : "slf4j-api",
+      "version" : "2.0.17",
+      "artifacts" : [
+        {
+          "name" : "slf4j-api.jar",
+          "hash" : "sha1:d9e58ac9c7779ba3bf8142aff6c830617a7fe60f"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "tools.jackson.core",
+      "name" : "jackson-core",
+      "version" : "3.0.1",
+      "artifacts" : [
+        {
+          "name" : "jackson-core.jar",
+          "hash" : "sha1:21540327d2721335405a749612b3111e0fa75734"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "tools.jackson.core",
+      "name" : "jackson-databind",
+      "version" : "3.0.1",
+      "artifacts" : [
+        {
+          "name" : "jackson-databind.jar",
+          "hash" : "sha1:90cde5eb4380dd2ff5c3b5ba2d7181bbad55e674"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    }
+  ]
+}
