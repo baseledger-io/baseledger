@@ -102,3 +102,9 @@ To build the highly optimized GraalVM standalone binary:
 ---
 
 _Built for the next generation of autonomous AI applications._
+
+---
+## Enterprise & Cloud 
+The Open-Source engine uses PostgreSQL for zero-friction local deployment. If your AI agents go viral and you need to scale past Postgres limitations, we offer a fully-managed cloud tier powered by **ScyllaDB** for 10,000+ TPS, or a BYOC (Bring Your Own Cloud) Enterprise License. 
+
+[Learn more at baseledger.io](https://baseledger.io)
