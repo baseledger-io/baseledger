@@ -14,6 +14,7 @@ message AddTokens {
   string idempotency_key = 2;
   int64 amount = 3 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
   string reply_to = 4;
+  map<string, string> metadata = 5;
 }
 
 message ReserveTokens {
@@ -23,14 +24,16 @@ message ReserveTokens {
   int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
   int64 ttl_seconds = 5;
   string reply_to = 6;
+  map<string, string> metadata = 7;
 }
 
 message SpendTokens {
   string id = 1;
   string idempotency_key = 2;
   string hold_id = 3;
-  string reply_to = 4;
-  map<string, string> metadata = 5;
+  int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
+  string reply_to = 5;
+  map<string, string> metadata = 6;
 }
 
 message ReleaseTokens {
@@ -38,6 +41,7 @@ message ReleaseTokens {
   string idempotency_key = 2;
   string hold_id = 3;
   string reply_to = 4;
+  map<string, string> metadata = 5;
 }
 
 // Wallet Events
@@ -46,6 +50,7 @@ message TokensAdded {
   string idempotency_key = 2;
   int64 amount = 3 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
   int64 timestamp = 4;
+  map<string, string> metadata = 5;
 }
 
 message TokensReserved {
@@ -55,6 +60,7 @@ message TokensReserved {
   int64 amount = 4 [(scalapb.field).type = "domain.WalletTypes.TransactionAmount"];
   int64 timestamp = 5;
   int64 expires_at_ms = 6;
+  map<string, string> metadata = 7;
 }
 
 message TokensSpent {
@@ -71,6 +77,7 @@ message TokensReleased {
   string idempotency_key = 2;
   string hold_id = 3;
   int64 timestamp = 4;
+  map<string, string> metadata = 5;
 }
 
 // Wallet State

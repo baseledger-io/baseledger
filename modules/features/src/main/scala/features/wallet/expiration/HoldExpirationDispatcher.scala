@@ -2,10 +2,10 @@ package features.wallet.expiration
 
 import java.time.Instant
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.util.{ Failure, Success, Try }
 
-import org.apache.pekko.actor.typed._
+import org.apache.pekko.actor.typed.*
 import org.apache.pekko.actor.typed.scaladsl.{ ActorContext, Behaviors, TimerScheduler }
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ClusterSharding
 import org.apache.pekko.cluster.typed.{ ClusterSingleton, SingletonActor }
@@ -35,8 +35,8 @@ object HoldExpirationDispatcher:
   import Command.*
 
   private val PollInterval: FiniteDuration = 5.seconds
-  private val BatchSize: Int               = 200
-  private val TickTimerKey                 = "poll-tick"
+  private val BatchSize: Int = 200
+  private val TickTimerKey = "poll-tick"
 
   def init(system: ActorSystem[?], repo: HoldExpirationRepository, sharding: ClusterSharding): ActorRef[Command] =
     ClusterSingleton(system)
@@ -45,7 +45,7 @@ object HoldExpirationDispatcher:
   private def behavior(repo: HoldExpirationRepository, sharding: ClusterSharding): Behavior[Command] =
     Behaviors.setup { context =>
       Behaviors.withTimers { timers =>
-        context.self ! Tick  // Bootstrap: kick off the first poll immediately, then self-clock.
+        context.self ! Tick // Bootstrap: kick off the first poll immediately, then self-clock.
         ready(context, timers, repo, sharding)
       }
     }
@@ -73,7 +73,7 @@ object HoldExpirationDispatcher:
       sharding: ClusterSharding
   ): Behavior[Command] =
     given resolver: ActorRefResolver = ActorRefResolver(context.system)
-    val ignoreRef: String            = resolver.toSerializationFormat(context.system.ignoreRef[Response])
+    val ignoreRef: String = resolver.toSerializationFormat(context.system.ignoreRef[Response])
 
     Behaviors.receiveMessage {
       case Tick =>
@@ -88,7 +88,8 @@ object HoldExpirationDispatcher:
                 id = row.walletId,
                 idempotencyKey = s"auto-release-${row.holdId}",
                 holdId = row.holdId,
-                replyTo = ignoreRef
+                replyTo = ignoreRef,
+                metadata = Map("reason" -> "ttl_expired")
               )
               sharding
                 .entityRefFor(WalletActor.TypeKey, row.walletId)

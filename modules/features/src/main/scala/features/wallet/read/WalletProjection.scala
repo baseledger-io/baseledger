@@ -20,7 +20,9 @@ class WalletHandler(repo: WalletRepository)(using ec: ExecutionContext)
     extends SlickHandler[EventEnvelope[WalletProtocol.Event]]:
 
   override def process(envelope: EventEnvelope[WalletProtocol.Event]): DBIO[Done] =
-    repo.handleEvent(envelope.event).map(_ => Done)
+    envelope.eventOption match
+      case Some(event) => repo.handleEvent(event).map(_ => Done)
+      case None        => DBIO.successful(Done)
 
 object WalletProjection:
   def createBehavior(system: ActorSystem[?], repo: WalletRepository): Behavior[ProjectionBehavior.Command] = {

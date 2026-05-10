@@ -5,7 +5,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.PathMatchers.Remaining
 import org.apache.pekko.http.scaladsl.server.Route
 

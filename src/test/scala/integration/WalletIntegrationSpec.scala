@@ -2,11 +2,11 @@ package integration
 
 import java.util.concurrent.atomic.AtomicReference
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.*
 import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import org.apache.pekko.util.ByteString
 
@@ -182,6 +182,23 @@ class WalletIntegrationSpec
         val body = Unmarshal(resp.entity).to[String].futureValue
         body should include("\"availableBalance\":0")
         body should include("\"reservedBalance\":1000")
+      }
+      // 5. Partial Spend Test
+      val wallet2 = "wallet-it-partial"
+      postJson(s"$baseUrl/wallet/$wallet2/add", """{"idempotencyKey":"add-p1","amount":1000}""").status shouldBe StatusCodes.OK
+      postJson(s"$baseUrl/wallet/$wallet2/reserve",
+        """{"idempotencyKey":"res-p1","holdId":"h-p1","amount":500,"ttlSeconds":3600}""").status shouldBe StatusCodes.OK
+
+      // Spend only 120 tokens from the 500 reserved.
+      // Expected: 1000 - 120 = 880 available.
+      postJson(s"$baseUrl/wallet/$wallet2/spend", """{"idempotencyKey":"spend-p1","holdId":"h-p1","amount":120}""").status shouldBe StatusCodes.OK
+
+      eventually(timeout(10.seconds), interval(500.millis)) {
+        val resp = Http().singleRequest(HttpRequest(uri = s"$baseUrl/wallet/$wallet2")).futureValue
+        resp.status shouldBe StatusCodes.OK
+        val body = Unmarshal(resp.entity).to[String].futureValue
+        body should include("\"availableBalance\":880")
+        body should include("\"reservedBalance\":0")
       }
     }
   }

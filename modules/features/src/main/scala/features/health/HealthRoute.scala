@@ -2,12 +2,12 @@ package features.health
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 import slick.jdbc.JdbcBackend
 import sttp.model.StatusCode
-import sttp.tapir._
+import sttp.tapir.*
 import sttp.tapir.server.ServerEndpoint
 
 class HealthRoute(db: JdbcBackend.Database)(using ec: ExecutionContext) {

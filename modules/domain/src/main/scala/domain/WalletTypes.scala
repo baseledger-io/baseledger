@@ -1,13 +1,13 @@
 package domain
 
-import io.github.iltotore.iron._
-import io.github.iltotore.iron.constraint.numeric._
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 import scalapb.TypeMapper
 
 object WalletTypes:
   // Transaction amounts must be strictly > 0
   type TransactionAmount = Long :| Positive
-  
+
   // Balances can be 0, so they must be >= 0
   type Balance = Long :| GreaterEqual[0L]
 

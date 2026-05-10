@@ -1,9 +1,9 @@
 package features
 
 import sttp.model.StatusCode
-import sttp.tapir._
-import sttp.tapir.generic.auto._
-import sttp.tapir.json.jsoniter._
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.jsoniter.*
 
 trait BaseEndpoint:
   def baseEndpoint: Endpoint[Unit, Unit, (StatusCode, ApiError), Unit, Any] =

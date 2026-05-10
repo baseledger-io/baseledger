@@ -1,6 +1,6 @@
 package domain
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.actor.typed.ActorRefResolver
@@ -8,11 +8,11 @@ import org.apache.pekko.persistence.testkit.scaladsl.EventSourcedBehaviorTestKit
 import org.apache.pekko.persistence.typed.PersistenceId
 
 import com.typesafe.config.ConfigFactory
-import domain.WalletProtocol._
-import domain.WalletTypes._
-import domain.wallet._
-import io.github.iltotore.iron._
-import io.github.iltotore.iron.constraint.numeric._
+import domain.WalletProtocol.*
+import domain.WalletTypes.*
+import domain.wallet.*
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTestKit.config.withFallback(ConfigFactory.load()))
@@ -29,7 +29,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
     "add tokens and update available balance" in {
       val result = eventSourcedTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
-        AddTokens("test-wallet-1", "idem-1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo))
+        AddTokens("test-wallet-1", "idem-1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply shouldBe WalletSuccess("test-wallet-1", 1000L.refineUnsafe[GreaterEqual[0L]], 0L.refineUnsafe[GreaterEqual[0L]])
@@ -40,7 +40,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
     "reserve tokens successfully" in {
       val result = eventSourcedTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
-        ReserveTokens("test-wallet-1", "idem-2", "hold-1", 400L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo))
+        ReserveTokens("test-wallet-1", "idem-2", "hold-1", 400L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply shouldBe WalletSuccess("test-wallet-1", 600L.refineUnsafe[GreaterEqual[0L]], 400L.refineUnsafe[GreaterEqual[0L]])
@@ -52,7 +52,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
     "reject reserve if insufficient funds" in {
       val result = eventSourcedTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
-        ReserveTokens("test-wallet-1", "idem-3", "hold-2", 9000L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo))
+        ReserveTokens("test-wallet-1", "idem-3", "hold-2", 9000L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply shouldBe WalletFailure("test-wallet-1", "Insufficient available balance", WalletActor.CodeInsufficientBalance)
@@ -63,7 +63,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       val result = eventSourcedTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
         // Using "idem-1" again with same params (Add 1000)
-        AddTokens("test-wallet-1", "idem-1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo))
+        AddTokens("test-wallet-1", "idem-1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       // Should return success with current state
@@ -75,7 +75,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       val result = eventSourcedTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
         // Using "idem-1" again but with different amount (5000)
-        AddTokens("test-wallet-1", "idem-1", 5000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo))
+        AddTokens("test-wallet-1", "idem-1", 5000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply.asInstanceOf[WalletFailure].code shouldBe WalletActor.CodeIdempotencyConflict
@@ -92,12 +92,12 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       val nearMax = (Long.MaxValue - 10L).refineUnsafe[Positive]
       overflowTestKit.runCommand { replyTo =>
         val resolver = ActorRefResolver(system)
-        AddTokens("test-wallet-overflow", "idem-max-1", nearMax, resolver.toSerializationFormat(replyTo))
+        AddTokens("test-wallet-overflow", "idem-max-1", nearMax, resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       // Try to add an amount that will cause an overflow (exceed Long.MaxValue)
       val pushOverEdge = 50L.refineUnsafe[Positive]
-      
+
       // We expect the actor to throw because Iron's .refineUnsafe fails
       // when the underlying Long silently overflows to a negative number.
       // Iron throws AssertionError (an IllegalArgumentException subclass
@@ -105,7 +105,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       assertThrows[Throwable] {
         overflowTestKit.runCommand { replyTo =>
           val resolver = ActorRefResolver(system)
-          AddTokens("test-wallet-overflow", "idem-max-2", pushOverEdge, resolver.toSerializationFormat(replyTo))
+          AddTokens("test-wallet-overflow", "idem-max-2", pushOverEdge, resolver.toSerializationFormat(replyTo), Map.empty)
         }
       }
     }
@@ -116,11 +116,12 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       )
       val resolver = ActorRefResolver(system)
 
-      kit.runCommand(replyTo => AddTokens("wallet-spend", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo)))
-      kit.runCommand(replyTo => ReserveTokens("wallet-spend", "k2", "hold-A", 400L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo)))
+      kit.runCommand(replyTo => AddTokens("wallet-spend", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo =>
+        ReserveTokens("wallet-spend", "k2", "hold-A", 400L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty))
 
       val result = kit.runCommand { replyTo =>
-        SpendTokens("wallet-spend", "k3", "hold-A", resolver.toSerializationFormat(replyTo), Map.empty)
+        SpendTokens("wallet-spend", "k3", "hold-A", 400L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply shouldBe WalletSuccess("wallet-spend", 600L.refineUnsafe[GreaterEqual[0L]], 0L.refineUnsafe[GreaterEqual[0L]])
@@ -135,11 +136,12 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       )
       val resolver = ActorRefResolver(system)
 
-      kit.runCommand(replyTo => AddTokens("wallet-release", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo)))
-      kit.runCommand(replyTo => ReserveTokens("wallet-release", "k2", "hold-B", 250L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo)))
+      kit.runCommand(replyTo => AddTokens("wallet-release", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo =>
+        ReserveTokens("wallet-release", "k2", "hold-B", 250L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty))
 
       val result = kit.runCommand { replyTo =>
-        ReleaseTokens("wallet-release", "k3", "hold-B", resolver.toSerializationFormat(replyTo))
+        ReleaseTokens("wallet-release", "k3", "hold-B", resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
       result.reply shouldBe WalletSuccess("wallet-release", 1000L.refineUnsafe[GreaterEqual[0L]], 0L.refineUnsafe[GreaterEqual[0L]])
@@ -156,13 +158,13 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       val resolver = ActorRefResolver(system)
 
       val spend = kit.runCommand { replyTo =>
-        SpendTokens("wallet-unknown-hold", "k1", "no-such-hold", resolver.toSerializationFormat(replyTo), Map.empty)
+        SpendTokens("wallet-unknown-hold", "k1", "no-such-hold", 100L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
       spend.reply.isInstanceOf[WalletFailure] shouldBe true
       spend.hasNoEvents shouldBe true
 
       val release = kit.runCommand { replyTo =>
-        ReleaseTokens("wallet-unknown-hold", "k2", "no-such-hold", resolver.toSerializationFormat(replyTo))
+        ReleaseTokens("wallet-unknown-hold", "k2", "no-such-hold", resolver.toSerializationFormat(replyTo), Map.empty)
       }
       release.reply.isInstanceOf[WalletFailure] shouldBe true
       release.hasNoEvents shouldBe true
@@ -174,11 +176,13 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       )
       val resolver = ActorRefResolver(system)
 
-      kit.runCommand(replyTo => AddTokens("wallet-replay", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo)))
-      kit.runCommand(replyTo => ReserveTokens("wallet-replay", "k2", "h1", 200L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo)))
-      kit.runCommand(replyTo => ReserveTokens("wallet-replay", "k3", "h2", 300L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo)))
-      kit.runCommand(replyTo => SpendTokens("wallet-replay", "k4", "h1", resolver.toSerializationFormat(replyTo), Map.empty))
-      kit.runCommand(replyTo => ReleaseTokens("wallet-replay", "k5", "h2", resolver.toSerializationFormat(replyTo)))
+      kit.runCommand(replyTo => AddTokens("wallet-replay", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo =>
+        ReserveTokens("wallet-replay", "k2", "h1", 200L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo =>
+        ReserveTokens("wallet-replay", "k3", "h2", 300L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo => SpendTokens("wallet-replay", "k4", "h1", 200L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
+      kit.runCommand(replyTo => ReleaseTokens("wallet-replay", "k5", "h2", resolver.toSerializationFormat(replyTo), Map.empty))
 
       val before = kit.getState()
       val recovered = kit.restart().state
@@ -194,7 +198,7 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       // Two real adds give us two genuine idempotency keys with current
       // wall-clock timestamps. Then we directly inject one stale key
       // into state to simulate it being older than 24h.
-      kit.runCommand(replyTo => AddTokens("wallet-prune", "fresh-1", 100L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo)))
+      kit.runCommand(replyTo => AddTokens("wallet-prune", "fresh-1", 100L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
 
       val staleTs = System.currentTimeMillis() - (25L * 60 * 60 * 1000) // 25h ago
       kit.initialize(WalletState(
@@ -203,18 +207,50 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
         activeHolds = Map.empty,
         recentIdempotencyKeys = Map(
           "fresh-1" -> ProcessedCommand("AddTokens", 100L, System.currentTimeMillis()),
-          "stale"   -> ProcessedCommand("AddTokens", 100L, staleTs)
+          "stale" -> ProcessedCommand("AddTokens", 100L, staleTs)
         )
       ))
-      kit.getState().recentIdempotencyKeys.keys should contain allOf ("fresh-1", "stale")
+      (kit.getState().recentIdempotencyKeys.keys should contain).allOf("fresh-1", "stale")
 
       // Trigger any new event; the eventHandler's pruning should drop "stale".
       val result = kit.runCommand { replyTo =>
-        AddTokens("wallet-prune", "fresh-2", 50L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo))
+        AddTokens("wallet-prune", "fresh-2", 50L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
       }
 
-      result.state.recentIdempotencyKeys.keys should contain allOf ("fresh-1", "fresh-2")
+      (result.state.recentIdempotencyKeys.keys should contain).allOf("fresh-1", "fresh-2")
       result.state.recentIdempotencyKeys.keys should not contain "stale"
+    }
+
+    "support partial captures on SpendTokens" in {
+      val kit = EventSourcedBehaviorTestKit[Command, Event, WalletState](
+        system, WalletActor("wallet-partial"), EventSourcedBehaviorTestKit.SerializationSettings.enabled
+      )
+      val resolver = ActorRefResolver(system)
+
+      // 1. Add 1000
+      kit.runCommand(replyTo => AddTokens("wallet-partial", "k1", 1000L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty))
+
+      // 2. Reserve 500
+      kit.runCommand(replyTo =>
+        ReserveTokens("wallet-partial", "k2", "h1", 500L.refineUnsafe[Positive], 3600L, resolver.toSerializationFormat(replyTo), Map.empty))
+
+      kit.getState().availableBalance shouldBe 500L.refineUnsafe[GreaterEqual[0L]]
+      kit.getState().reservedBalance shouldBe 500L.refineUnsafe[GreaterEqual[0L]]
+
+      // 3. Partial Spend: Capture only 123
+      val result = kit.runCommand { replyTo =>
+        SpendTokens("wallet-partial", "k3", "h1", 123L.refineUnsafe[Positive], resolver.toSerializationFormat(replyTo), Map.empty)
+      }
+
+      // 4. Verification:
+      // - Spend 123 from 500 reserved.
+      // - 500 - 123 = 377 should be refunded to available.
+      // - Final Available = 500 + 377 = 877
+      // - Final Reserved = 0
+      result.reply shouldBe WalletSuccess("wallet-partial", 877L.refineUnsafe[GreaterEqual[0L]], 0L.refineUnsafe[GreaterEqual[0L]])
+      result.state.availableBalance shouldBe 877L.refineUnsafe[GreaterEqual[0L]]
+      result.state.reservedBalance shouldBe 0L.refineUnsafe[GreaterEqual[0L]]
+      result.state.activeHolds shouldBe empty
     }
   }
 }

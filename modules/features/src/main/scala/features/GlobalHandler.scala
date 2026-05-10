@@ -2,11 +2,11 @@ package features
 
 import scala.concurrent.Future
 
-import features.DomainError._
+import features.DomainError.*
 import sttp.model.StatusCode
-import sttp.tapir._
-import sttp.tapir.generic.auto._
-import sttp.tapir.json.jsoniter._
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.jsoniter.*
 import sttp.tapir.server.interceptor.decodefailure.DecodeFailureHandler
 import sttp.tapir.server.interceptor.exception.ExceptionHandler
 import sttp.tapir.server.model.ValuedEndpointOutput

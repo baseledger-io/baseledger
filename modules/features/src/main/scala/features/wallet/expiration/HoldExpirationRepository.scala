@@ -1,18 +1,18 @@
 package features.wallet.expiration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 import slick.dbio.DBIO
 import slick.jdbc.JdbcBackend
-import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.PostgresProfile.api.*
 
 case class HoldExpirationRow(holdId: String, walletId: String, expiresAtMs: Long, amount: Long)
 
 class HoldExpirations(tag: Tag) extends Table[HoldExpirationRow](tag, "hold_expirations"):
-  def holdId      = column[String]("hold_id", O.PrimaryKey)
-  def walletId    = column[String]("wallet_id")
+  def holdId = column[String]("hold_id", O.PrimaryKey)
+  def walletId = column[String]("wallet_id")
   def expiresAtMs = column[Long]("expires_at_ms")
-  def amount      = column[Long]("amount")
+  def amount = column[Long]("amount")
 
   def * = (holdId, walletId, expiresAtMs, amount).mapTo[HoldExpirationRow]
 
@@ -36,8 +36,9 @@ class HoldExpirationRepository(db: JdbcBackend.Database)(using ExecutionContext)
         .result
     )
 
-  /** Total number of pending hold-expiration rows, exposed as a Prometheus
-   *  gauge to spot a stuck dispatcher. */
+  /**
+   * Total number of pending hold-expiration rows, exposed as a Prometheus
+   *  gauge to spot a stuck dispatcher.
+   */
   def countAll(): Future[Long] =
     db.run(table.length.result).map(_.toLong)
-

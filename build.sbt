@@ -1,11 +1,11 @@
 resolvers += "Maven Central".at("https://repo1.maven.org/maven2/")
 
-import sbt._
-import Keys._
+import sbt.*
+import Keys.*
 
 import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.graalvmnativeimage.GraalVMNativeImagePlugin
-import com.typesafe.sbt.packager.graalvmnativeimage.GraalVMNativeImagePlugin.autoImport._
+import com.typesafe.sbt.packager.graalvmnativeimage.GraalVMNativeImagePlugin.autoImport.*
 
 val scala3Version = "3.3.7"
 val PekkoVersion = "1.5.0"

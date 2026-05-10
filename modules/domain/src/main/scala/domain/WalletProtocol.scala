@@ -1,8 +1,8 @@
 package domain
 
-import org.apache.pekko.actor.typed._
+import org.apache.pekko.actor.typed.*
 
-import domain.wallet._
+import domain.wallet.*
 
 object WalletProtocol:
   type Command = AddTokens | ReserveTokens | SpendTokens | ReleaseTokens

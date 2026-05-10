@@ -1,34 +1,34 @@
 package features.wallet
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future }
 
-import org.apache.pekko.actor.typed.{ActorRefResolver, ActorSystem, Scheduler}
+import org.apache.pekko.actor.typed.{ ActorRefResolver, ActorSystem, Scheduler }
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ClusterSharding
 import org.apache.pekko.util.Timeout
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import domain.WalletActor
-import domain.WalletProtocol._
-import domain.WalletTypes._
-import domain.wallet._
+import domain.WalletProtocol.*
+import domain.WalletTypes.*
+import domain.wallet.*
 import features.wallet.read.{ WalletRepository, WalletRow }
 import features.{ ApiError, BaseEndpoint }
-import io.github.iltotore.iron._
-import io.github.iltotore.iron.constraint.numeric._
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 import sttp.model.StatusCode
-import sttp.tapir._
-import sttp.tapir.generic.auto._
-import sttp.tapir.json.jsoniter._
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.jsoniter.*
 import sttp.tapir.server.ServerEndpoint
 
 object WalletRoute:
-  case class AddTokensRequest(idempotencyKey: String, amount: Long)
-  case class ReserveTokensRequest(idempotencyKey: String, holdId: String, amount: Long, ttlSeconds: Long)
-  case class SpendTokensRequest(idempotencyKey: String, holdId: String, metadata: Option[Map[String, String]] = None)
-  case class ReleaseTokensRequest(idempotencyKey: String, holdId: String)
-  
+  case class AddTokensRequest(idempotencyKey: String, amount: Long, metadata: Option[Map[String, String]] = None)
+  case class ReserveTokensRequest(idempotencyKey: String, holdId: String, amount: Long, ttlSeconds: Long, metadata: Option[Map[String, String]] = None)
+  case class SpendTokensRequest(idempotencyKey: String, holdId: String, amount: Long, metadata: Option[Map[String, String]] = None)
+  case class ReleaseTokensRequest(idempotencyKey: String, holdId: String, metadata: Option[Map[String, String]] = None)
+
   case class WalletResponseDto(id: String, availableBalance: Long, reservedBalance: Long)
 
   given JsonValueCodec[AddTokensRequest] = JsonCodecMaker.make
@@ -96,10 +96,10 @@ class WalletRoute(sharding: ClusterSharding, repo: WalletRepository)(using syste
 
   private val codeToStatus: Map[String, StatusCode] = Map(
     WalletActor.CodeIdempotencyConflict -> StatusCode.Conflict,
-    WalletActor.CodeWalletNotFound       -> StatusCode.NotFound,
-    WalletActor.CodeHoldNotFound         -> StatusCode.NotFound,
-    WalletActor.CodeInsufficientBalance  -> StatusCode.BadRequest,
-    WalletActor.CodeHoldAlreadyExists    -> StatusCode.Conflict
+    WalletActor.CodeWalletNotFound -> StatusCode.NotFound,
+    WalletActor.CodeHoldNotFound -> StatusCode.NotFound,
+    WalletActor.CodeInsufficientBalance -> StatusCode.BadRequest,
+    WalletActor.CodeHoldAlreadyExists -> StatusCode.Conflict
   )
 
   private def handleResponse(id: String, resp: Response): Either[(StatusCode, ApiError), (StatusCode, WalletResponseDto)] =
@@ -117,7 +117,8 @@ class WalletRoute(sharding: ClusterSharding, repo: WalletRepository)(using syste
         req.amount.refineEither[Positive] match {
           case Right(validAmount) =>
             sharding.entityRefFor(WalletActor.TypeKey, id)
-              .ask[Response](replyTo => AddTokens(id, req.idempotencyKey, validAmount, resolver.toSerializationFormat(replyTo)))
+              .ask[Response](replyTo =>
+                AddTokens(id, req.idempotencyKey, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
               .map(r => handleResponse(id, r))
           case Left(errorMsg) =>
             Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
@@ -127,25 +128,33 @@ class WalletRoute(sharding: ClusterSharding, repo: WalletRepository)(using syste
         req.amount.refineEither[Positive] match {
           case Right(validAmount) =>
             sharding.entityRefFor(WalletActor.TypeKey, id)
-              .ask[Response](replyTo => ReserveTokens(id, req.idempotencyKey, req.holdId, validAmount, req.ttlSeconds, resolver.toSerializationFormat(replyTo)))
+              .ask[Response](replyTo =>
+                ReserveTokens(id, req.idempotencyKey, req.holdId, validAmount, req.ttlSeconds, resolver.toSerializationFormat(replyTo),
+                  req.metadata.getOrElse(Map.empty)))
               .map(r => handleResponse(id, r))
           case Left(errorMsg) =>
             Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
         }
       },
       spendEndpoint.serverLogic { (id, req) =>
-        sharding.entityRefFor(WalletActor.TypeKey, id)
-          .ask[Response](replyTo => SpendTokens(id, req.idempotencyKey, req.holdId, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
-          .map(r => handleResponse(id, r))
+        req.amount.refineEither[Positive] match
+          case Right(validAmount) =>
+            sharding.entityRefFor(WalletActor.TypeKey, id)
+              .ask[Response](replyTo =>
+                SpendTokens(id, req.idempotencyKey, req.holdId, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
+              .map(r => handleResponse(id, r))
+          case Left(errorMsg) =>
+            Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
       },
       releaseEndpoint.serverLogic { (id, req) =>
         sharding.entityRefFor(WalletActor.TypeKey, id)
-          .ask[Response](replyTo => ReleaseTokens(id, req.idempotencyKey, req.holdId, resolver.toSerializationFormat(replyTo)))
+          .ask[Response](replyTo =>
+            ReleaseTokens(id, req.idempotencyKey, req.holdId, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
           .map(r => handleResponse(id, r))
       },
       getEndpoint.serverLogic { id =>
         repo.findById(id).map:
           case Some(row) => Right((StatusCode.Ok, WalletResponseDto(row.id, row.availableBalance, row.reservedBalance)))
-          case None      => Left((StatusCode.NotFound, ApiError(WalletActor.CodeWalletNotFound, List(s"Wallet $id not found"))))
+          case None => Left((StatusCode.NotFound, ApiError(WalletActor.CodeWalletNotFound, List(s"Wallet $id not found"))))
       }
     )

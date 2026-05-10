@@ -40,7 +40,11 @@ podman-compose up -d
 ```bash
 curl -X POST http://localhost:8000/wallet/user-123/add \
   -H "Content-Type: application/json" \
-  -d '{"idempotencyKey": "topup-1", "amount": 1000}'
+  -d '{
+    "idempotencyKey": "topup-1",
+    "amount": 1000,
+    "metadata": {"source": "stripe-checkout"}
+  }'
 ```
 
 **2. Reserve Tokens for an LLM Prompt**
@@ -65,8 +69,43 @@ curl -X POST http://localhost:8000/wallet/user-123/spend \
   -d '{
     "idempotencyKey": "spend-1", 
     "holdId": "hold-abc",
+    "amount": 123,
     "metadata": {"feature": "image_generation"}
   }'
+```
+
+**4. Release a Reservation (LLM Failure / Cancellation)**
+
+```bash
+curl -X POST http://localhost:8000/wallet/user-123/release \
+  -H "Content-Type: application/json" \
+  -d '{
+    "idempotencyKey": "release-1",
+    "holdId": "hold-abc",
+    "metadata": {"reason": "timeout"}
+  }'
+```
+
+**5. Query Wallet Balance**
+
+```bash
+curl http://localhost:8000/wallet/user-123
+```
+
+All write endpoints return the current wallet state:
+
+```json
+{"id": "user-123", "availableBalance": 877, "reservedBalance": 0}
+```
+
+### Health Endpoints
+
+```bash
+# Liveness probe (is the process running?)
+curl http://localhost:8000/health/live
+
+# Readiness probe (is the database reachable?)
+curl http://localhost:8000/health/ready
 ```
 
 ## How it Works (The Integrity Core)
