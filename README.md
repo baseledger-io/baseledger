@@ -16,7 +16,7 @@ Traditional "balance" columns in a user table are vulnerable to race conditions 
 
 Depending on how you intend to run BaseLedger, you will need:
 - **For the Quick Start:** [Docker](https://docs.docker.com/get-docker/) (with Docker Compose) OR [Podman](https://podman.io/) (with Podman Compose).
-- **For Local Development:** JDK 17+ (GraalVM recommended) and a running PostgreSQL instance. 
+- **For Local Development:** JDK 17+ (GraalVM recommended) a running PostgreSQL instance, and Flyway CLI (or use the docker-compose to run the migrations for you).
 
 
 ## Quick Start
