@@ -113,6 +113,8 @@ lazy val root = project
       "--no-fallback",
       "--install-exit-handlers",
       "--enable-url-protocols=http,https",
+      "--static",
+      "--libc=musl",
       "-O3",
       "-J-Xmx6g",
       "--initialize-at-build-time=scala.runtime.Statics$VM",

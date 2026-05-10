@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-FROM ghcr.io/graalvm/native-image-community:25-ol9 AS builder
+FROM ghcr.io/graalvm/native-image-community:25-muslib-ol9 AS builder
 
 RUN microdnf install -y git zip unzip \
     && microdnf clean all
@@ -31,14 +31,18 @@ RUN --mount=type=cache,target=/root/.sbt \
     ./sbtx -Dsbt.color=false "GraalVMNativeImage / packageBin"
 
 # Final image
-FROM gcr.io/distroless/base-debian12 AS runtime
+FROM scratch AS runtime
+
+# Copy CA Certificates to allow HTTPS requests (scratch doesn't have them)
+COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/tls/certs/ca-bundle.crt
+COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt
 
 # OCI Image Branding
-LABEL org.opencontainers.image.title="BaseLedger Open Core"
+LABEL org.opencontainers.image.title="BaseLedger"
 LABEL org.opencontainers.image.description="High-integrity, high-performance usage and budget firewall for AI agents."
-LABEL org.opencontainers.image.authors="Jabir Minjibir"
+LABEL org.opencontainers.image.authors="support@baseledger.io"
 LABEL org.opencontainers.image.vendor="BaseLedger"
-LABEL org.opencontainers.image.source="https://github.com/minjibir/baseledger/"
+LABEL org.opencontainers.image.source="https://github.com/baseledger-io/baseledger/"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 WORKDIR /app

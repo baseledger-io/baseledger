@@ -48,7 +48,13 @@ curl -X POST http://localhost:8000/wallet/user-123/add \
 ```bash
 curl -X POST http://localhost:8000/wallet/user-123/reserve \
   -H "Content-Type: application/json" \
-  -d '{"idempotencyKey": "prompt-1", "holdId": "hold-abc", "amount": 400, "ttlSeconds": 30}'
+  -d '{
+    "idempotencyKey": "prompt-1", 
+    "holdId": "hold-abc", 
+    "amount": 400, 
+    "ttlSeconds": 30,
+    "metadata": {"model": "gpt-4-turbo"}
+  }'
 ```
 
 **3. Settle the Charge (LLM Success)**
@@ -56,7 +62,11 @@ curl -X POST http://localhost:8000/wallet/user-123/reserve \
 ```bash
 curl -X POST http://localhost:8000/wallet/user-123/spend \
   -H "Content-Type: application/json" \
-  -d '{"idempotencyKey": "spend-1", "holdId": "hold-abc"}'
+  -d '{
+    "idempotencyKey": "spend-1", 
+    "holdId": "hold-abc",
+    "metadata": {"feature": "image_generation"}
+  }'
 ```
 
 ## How it Works (The Integrity Core)
