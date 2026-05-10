@@ -1,3 +1,15 @@
+-- ==============================================================================
+-- PEKKO PERSISTENCE / EVENT SOURCING INFRASTRUCTURE
+-- ==============================================================================
+-- IMPORTANT: This migration is strictly for the core write-side infrastructure 
+-- (event journal, snapshots, durable state, and projection offsets).
+-- 
+-- DO NOT add application-specific read-side tables (e.g., wallets, transactions) 
+-- to this file. Read-side projections and application models should be kept in 
+-- separate migrations (e.g., V0001__read_side_projections.sql) to maintain 
+-- a clear separation between the write-side journal and the read-side views.
+-- ==============================================================================
+
 CREATE TABLE IF NOT EXISTS event_journal(
   slice INT NOT NULL,
   entity_type VARCHAR(255) NOT NULL,
