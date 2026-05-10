@@ -1,0 +1,44 @@
+# common IDEs to be ignored
+.idea/
+.metals/
+.vscode/
+
+# build tool specific entries
+.bloop
+target
+metals.sbt
+project/project
+.envrc
+.env
+.bsp/
+**/dev.conf
+
+
+# UI Stufss
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+*.log
+*classpath*
+test_output.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+result

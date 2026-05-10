@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Persistence & Driver noise reduction -->
+    <logger name="io.r2dbc" level="INFO"/>
+    <logger name="reactor" level="INFO"/>
+    <logger name="org.apache.pekko" level="INFO"/>
+    
+    <!-- SQL Logging -->
+    <logger name="slick.jdbc.JdbcBackend.statement" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
