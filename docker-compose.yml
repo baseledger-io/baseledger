@@ -33,7 +33,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: baseledger/baseledger:latest
+    image: ghcr.io/baseledger-io/baseledger:latest
     restart: unless-stopped
     depends_on:
       db:
