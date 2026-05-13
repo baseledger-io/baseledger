@@ -73,16 +73,16 @@ lazy val features = project
       "org.apache.pekko" %% "pekko-connectors-slick"        % PekkoConnectorsVersion,
 
       // Unified Observability (OTel)
-      "com.softwaremill.sttp.tapir"           %% "tapir-opentelemetry-metrics"       % TapirVersion,
-      "com.softwaremill.sttp.tapir"           %% "tapir-swagger-ui-bundle"           % TapirVersion,
-      "com.softwaremill.sttp.tapir"           %% "tapir-opentelemetry-tracing"       % TapirVersion,
-      "com.softwaremill.sttp.tapir"           %% "tapir-pekko-http-server"           % TapirVersion,
-      "com.softwaremill.sttp.tapir"           %% "tapir-jsoniter-scala"              % TapirVersion,
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"               % JsoniterVersion,
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros"             % JsoniterVersion % "provided",
-      "io.opentelemetry"                       % "opentelemetry-sdk"                 % "1.43.0",
-      "io.opentelemetry"                       % "opentelemetry-exporter-otlp"       % "1.43.0",
-      "io.opentelemetry"                       % "opentelemetry-exporter-prometheus" % "1.43.0-alpha"
+      "com.softwaremill.sttp.tapir"           %% "tapir-opentelemetry-metrics"               % TapirVersion,
+      "com.softwaremill.sttp.tapir"           %% "tapir-swagger-ui-bundle"                   % TapirVersion,
+      "com.softwaremill.sttp.tapir"           %% "tapir-opentelemetry-tracing"               % TapirVersion,
+      "com.softwaremill.sttp.tapir"           %% "tapir-pekko-http-server"                   % TapirVersion,
+      "com.softwaremill.sttp.tapir"           %% "tapir-jsoniter-scala"                      % TapirVersion,
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"                       % JsoniterVersion,
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros"                     % JsoniterVersion % "provided",
+      "io.opentelemetry"                       % "opentelemetry-sdk"                         % "1.43.0",
+      "io.opentelemetry"                       % "opentelemetry-exporter-otlp"               % "1.43.0",
+      "io.opentelemetry"                       % "opentelemetry-sdk-extension-autoconfigure" % "1.43.0"
     )
   )
 

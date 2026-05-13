@@ -50,6 +50,5 @@ WORKDIR /app
 COPY --from=builder /workspace/target/graalvm-native-image/baseledger /app/baseledger
 
 EXPOSE 8000
-EXPOSE 9464
 
 ENTRYPOINT ["/app/baseledger"]

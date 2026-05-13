@@ -128,6 +128,25 @@ BaseLedger is designed for absolute correctness. It uses **Event Sourcing** and 
 | `POSTGRES_PASSWORD` | Database password | `password`  |
 | `HTTP_PORT`         | API Port          | `8000`      |
 
+### Observability (Optional)
+
+BaseLedger is instrumented with OpenTelemetry. Telemetry export is **disabled by default** so the app runs cleanly out of the box. To see live traces, metrics, and logs in a Grafana UI, start the stack with the observability override:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.observability.yml up
+```
+
+Then open **http://localhost:3000** — Grafana is pre-wired with Tempo (traces), Prometheus (metrics), and Loki (logs). No login, no extra setup. Your app's telemetry shows up automatically.
+
+To point the app at an existing collector instead, set:
+
+```env
+OTEL_TRACES_EXPORTER=otlp
+OTEL_METRICS_EXPORTER=otlp
+OTEL_LOGS_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_ENDPOINT=http://your-collector:4317
+```
+
 
 ## Local Development (From Source)
 
