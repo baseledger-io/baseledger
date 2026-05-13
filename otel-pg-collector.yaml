@@ -1,0 +1,20 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: postgres
+          scrape_interval: 15s
+          static_configs:
+            - targets: [postgres-exporter:9187]
+
+exporters:
+  otlp:
+    endpoint: otel-lgtm:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      exporters: [otlp]

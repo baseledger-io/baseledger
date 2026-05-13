@@ -8,6 +8,38 @@ services:
     networks:
       - baseledger-net
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    restart: unless-stopped
+    command:
+      - "--collector.disable-defaults"
+      - "--collector.database"
+      - "--collector.locks"
+      - "--collector.stat_activity"
+      - "--collector.replication"
+      - "--collector.stat_user_tables"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://baseledger:password@db:5432/baseledger?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - baseledger-net
+
+  pg-metrics-collector:
+    image: otel/opentelemetry-collector-contrib:0.110.0
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-pg-collector.yaml:/etc/otelcol/config.yaml:ro
+    depends_on:
+      postgres-exporter:
+        condition: service_started
+      otel-lgtm:
+        condition: service_started
+    networks:
+      - baseledger-net
+
   app:
     depends_on:
       otel-lgtm:
