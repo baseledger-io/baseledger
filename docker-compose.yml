@@ -48,9 +48,13 @@ services:
       POSTGRES_PASSWORD: password
       HTTP_HOST: "0.0.0.0"
       HTTP_PORT: "8000"
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-none}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-none}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-baseledger}
     ports:
-      - "8000:8000" # HTTP API
-      - "9464:9464" # Prometheus metrics
+      - "8000:8000"
     stop_grace_period: 30s
     networks:
       - baseledger-net

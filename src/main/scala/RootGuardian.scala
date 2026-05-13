@@ -56,13 +56,8 @@ object RootGuardian:
     HoldExpirationDispatcher.init(context.system, holdExpirationRepo, sharding)
     context.log.info("RootGuardian: Hold expiration dispatcher initialized.")
 
-    // Observability: build OpenTelemetry SDK with Prometheus scrape endpoint.
-    val cfg = context.system.settings.config
-    val prometheusPort =
-      if cfg.hasPath("observability.prometheus.port") then cfg.getInt("observability.prometheus.port")
-      else 9464
-    val otel = Observability.init("baseledger", prometheusPort)
-    context.log.info("RootGuardian: Observability initialized (Prometheus on :{}).", prometheusPort)
+    val otel = Observability.init("baseledger")
+    context.log.info("RootGuardian: Observability initialized.")
 
     HoldExpirationMetrics.register(otel.otel, holdExpirationRepo)
     context.log.info("RootGuardian: hold_expiration_queue_depth gauge registered.")
