@@ -3,10 +3,8 @@ package app
 import scala.concurrent.{ ExecutionContext, Future }
 
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.http.scaladsl.server.Directives.*
-import org.apache.pekko.http.scaladsl.server.PathMatchers.Remaining
+import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.Route
 
 import features.GlobalHandler
@@ -16,6 +14,7 @@ import sttp.tapir.server.interceptor.log.DefaultServerLog
 import sttp.tapir.server.metrics.opentelemetry.OpenTelemetryMetrics
 import sttp.tapir.server.pekkohttp.{ PekkoHttpServerInterpreter, PekkoHttpServerOptions }
 import sttp.tapir.server.tracing.opentelemetry.OpenTelemetryTracing
+import sttp.tapir.swagger.SwaggerUIOptions
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTelemetry)(using system: ActorSystem[?]): Route =
@@ -24,7 +23,9 @@ def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTeleme
   val title = "AI Ledger Engine API"
   val version = "0.1.0"
 
-  val swaggerEndpoints = SwaggerInterpreter().fromServerEndpoints[Future](endpoints, title, version)
+  val swaggerUIOptions = SwaggerUIOptions.default.copy(useRelativePaths = false)
+  val swaggerEndpoints = SwaggerInterpreter(swaggerUIOptions = swaggerUIOptions)
+    .fromServerEndpoints[Future](endpoints, title, version)
   val swaggerRoute = PekkoHttpServerInterpreter().toRoute(swaggerEndpoints)
 
   val combinedEndpoints = endpoints ++ swaggerEndpoints
@@ -77,7 +78,5 @@ def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTeleme
   )
 
   respondWithHeaders(securityHeaders) {
-    path("docs") {
-      redirect("/docs/", StatusCodes.MovedPermanently)
-    } ~ PekkoHttpServerInterpreter(serverOptions).toRoute(combinedEndpoints)
+    PekkoHttpServerInterpreter(serverOptions).toRoute(combinedEndpoints)
   }
