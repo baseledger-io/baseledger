@@ -104,7 +104,7 @@ lazy val tests = project
 lazy val root = project
   .in(file("."))
   .aggregate(common, domain, features, tests)
-  .dependsOn(features)
+  .dependsOn(features, tests % "test->test")
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     name                := "baseledger",

@@ -15,10 +15,16 @@ import app.{ Migrations, RootGuardian }
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import com.dimafeng.testcontainers.scalatest.TestContainerForAll
 import com.typesafe.config.{ Config, ConfigFactory }
+import common.TestEnv
 import org.scalatest.concurrent.{ Eventually, ScalaFutures }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.testcontainers.utility.DockerImageName
+
+object WalletIntegrationSpec {
+  // Seed env-var fallbacks before the first ConfigFactory.load().
+  TestEnv.init()
+}
 
 /**
  * End-to-end smoke test covering the full single-node stack:
@@ -39,6 +45,9 @@ class WalletIntegrationSpec
     with ScalaFutures
     with Eventually
     with TestContainerForAll {
+
+  // Force object init (and thus system-property defaults) before any config load.
+  private val _ = WalletIntegrationSpec
 
   implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(30.seconds), interval = scaled(100.millis))
@@ -183,7 +192,7 @@ class WalletIntegrationSpec
         body should include("\"availableBalance\":0")
         body should include("\"reservedBalance\":1000")
       }
-      // 5. Partial Spend Test
+      SEVERE: Failed to export spans. The request could not be executed. Error message: Failed to connect to localhost/[0:0:0:0:0:0:0:1]:4317// 5. Partial Spend Test
       val wallet2 = "wallet-it-partial"
       postJson(s"$baseUrl/wallet/$wallet2/add", """{"idempotencyKey":"add-p1","amount":1000}""").status shouldBe StatusCodes.OK
       postJson(s"$baseUrl/wallet/$wallet2/reserve",
