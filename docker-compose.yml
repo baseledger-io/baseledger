@@ -1,0 +1,71 @@
+services:
+  db:
+    image: ${POSTGRES_IMAGE}
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PUBLISHED_PORT}:${POSTGRES_PORT}"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+      baseledger-net:
+        aliases:
+          - db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - baseledger-net
+
+  migrations:
+    image: ${FLYWAY_IMAGE}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      baseledger-net:
+        aliases:
+          - db
+    volumes:
+      - ./src/main/resources/db/migrations:/flyway/migrations
+    command: >
+      -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      -user=${POSTGRES_USER}
+      -password=${POSTGRES_PASSWORD}
+      -locations=filesystem:/flyway/migrations
+      -connectRetries=60
+      migrate
+    networks:
+      - baseledger-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${APP_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    ports:
+      - "${HTTP_PUBLISHED_PORT}:${HTTP_PORT}"
+    stop_grace_period: 30s
+    networks:
+      - baseledger-net
+
+volumes:
+  db_data:
+
+networks:
+  baseledger-net:
+    driver: bridge
