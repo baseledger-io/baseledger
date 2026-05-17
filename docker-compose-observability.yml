@@ -20,18 +20,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    networks:
-      - baseledger-net
 
   migrations:
     image: ${FLYWAY_IMAGE}
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      baseledger-net:
-        aliases:
-          - db
     volumes:
       - ./src/main/resources/db/migrations:/flyway/migrations
     command: >
@@ -88,8 +82,27 @@ services:
         condition: service_completed_successfully
       otel-lgtm:
         condition: service_started
-    env_file:
-      - .env
+    environment:
+      HTTP_HOST: ${HTTP_HOST}
+      HTTP_PORT: ${HTTP_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PEKKO_REMOTE_HOSTNAME: ${PEKKO_REMOTE_HOSTNAME}
+      PEKKO_REMOTE_PORT: ${PEKKO_REMOTE_PORT}
+      PEKKO_LOGLEVEL: ${PEKKO_LOGLEVEL}
+      PEKKO_NUMBER_OF_SHARDS: ${PEKKO_NUMBER_OF_SHARDS}
+      DB_NUM_THREADS: ${DB_NUM_THREADS}
+      DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS}
+      DB_MIN_CONNECTIONS: ${DB_MIN_CONNECTIONS}
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME}
     ports:
       - "${HTTP_PUBLISHED_PORT}:${HTTP_PORT}"
     stop_grace_period: 30s

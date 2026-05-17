@@ -23,7 +23,7 @@ ThisBuild / scalaVersion := scala3Version
 // Static Analysis: SemanticDB for Scalafix
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalafixOnCompile := true
+ThisBuild / scalafixOnCompile := false
 
 lazy val common = project
   .in(file("modules/common"))
