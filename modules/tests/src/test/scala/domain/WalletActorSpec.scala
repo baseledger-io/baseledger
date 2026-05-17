@@ -2,12 +2,13 @@ package domain
 
 import scala.concurrent.duration.*
 
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import org.apache.pekko.actor.testkit.typed.scaladsl.{ LoggingTestKit, ScalaTestWithActorTestKit }
 import org.apache.pekko.actor.typed.ActorRefResolver
 import org.apache.pekko.persistence.testkit.scaladsl.EventSourcedBehaviorTestKit
 import org.apache.pekko.persistence.typed.PersistenceId
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ Config, ConfigFactory }
+import common.TestEnv
 import domain.WalletProtocol.*
 import domain.WalletTypes.*
 import domain.wallet.*
@@ -15,7 +16,15 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTestKit.config.withFallback(ConfigFactory.load()))
+object WalletActorSpec {
+  // Seed env-var fallbacks before the first ConfigFactory.load() call.
+  private def testConfig: Config = {
+    TestEnv.init()
+    EventSourcedBehaviorTestKit.config.withFallback(ConfigFactory.load())
+  }
+}
+
+class WalletActorSpec extends ScalaTestWithActorTestKit(WalletActorSpec.testConfig)
     with AnyWordSpecLike {
 
   private val eventSourcedTestKit =
@@ -98,16 +107,21 @@ class WalletActorSpec extends ScalaTestWithActorTestKit(EventSourcedBehaviorTest
       // Try to add an amount that will cause an overflow (exceed Long.MaxValue)
       val pushOverEdge = 50L.refineUnsafe[Positive]
 
-      // We expect the actor to throw because Iron's .refineUnsafe fails
-      // when the underlying Long silently overflows to a negative number.
-      // Iron throws AssertionError (an IllegalArgumentException subclass
-      // is no longer guaranteed across versions); accept either.
-      assertThrows[Throwable] {
-        overflowTestKit.runCommand { replyTo =>
-          val resolver = ActorRefResolver(system)
-          AddTokens("test-wallet-overflow", "idem-max-2", pushOverEdge, resolver.toSerializationFormat(replyTo), Map.empty)
+      // The supervisor logs the IllegalArgumentException at ERROR before
+      // terminating the persistent actor. Use LoggingTestKit to both assert
+      // the failure surfaces in the logs AND consume the event so it doesn't
+      // pollute test output.
+      LoggingTestKit
+        .error[IllegalArgumentException]
+        .withMessageRegex(".*greater than or equal to 0.*")
+        .expect {
+          assertThrows[Throwable] {
+            overflowTestKit.runCommand { replyTo =>
+              val resolver = ActorRefResolver(system)
+              AddTokens("test-wallet-overflow", "idem-max-2", pushOverEdge, resolver.toSerializationFormat(replyTo), Map.empty)
+            }
+          }
         }
-      }
     }
 
     "spend tokens against an active hold" in {

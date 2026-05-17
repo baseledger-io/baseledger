@@ -23,7 +23,7 @@ ThisBuild / scalaVersion := scala3Version
 // Static Analysis: SemanticDB for Scalafix
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalafixOnCompile := true
+ThisBuild / scalafixOnCompile := false
 
 lazy val common = project
   .in(file("modules/common"))
@@ -104,7 +104,7 @@ lazy val tests = project
 lazy val root = project
   .in(file("."))
   .aggregate(common, domain, features, tests)
-  .dependsOn(features)
+  .dependsOn(features, tests % "test->test")
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     name                := "baseledger",

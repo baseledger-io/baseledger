@@ -15,10 +15,16 @@ import app.{ Migrations, RootGuardian }
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import com.dimafeng.testcontainers.scalatest.TestContainerForAll
 import com.typesafe.config.{ Config, ConfigFactory }
+import common.TestEnv
 import org.scalatest.concurrent.{ Eventually, ScalaFutures }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.testcontainers.utility.DockerImageName
+
+object WalletIntegrationSpec {
+  // Seed env-var fallbacks before the first ConfigFactory.load().
+  TestEnv.init()
+}
 
 /**
  * End-to-end smoke test covering the full single-node stack:
@@ -39,6 +45,9 @@ class WalletIntegrationSpec
     with ScalaFutures
     with Eventually
     with TestContainerForAll {
+
+  // Force object init (and thus system-property defaults) before any config load.
+  private val _ = WalletIntegrationSpec
 
   implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(30.seconds), interval = scaled(100.millis))

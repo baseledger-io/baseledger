@@ -14,7 +14,7 @@ services:
         aliases:
           - db
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_v2:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -38,6 +38,37 @@ services:
     networks:
       - baseledger-net
 
+  otel-lgtm:
+    image: ${OTEL_LGTM_IMAGE}
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PUBLISHED_PORT}:3000"
+      - "${OTEL_GRPC_PUBLISHED_PORT}:4317"
+    networks:
+      baseledger-net:
+        aliases:
+          - otel-lgtm
+
+  pg-metrics-collector:
+    image: ${OTEL_COLLECTOR_IMAGE}
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-pg-collector.yaml:/etc/otelcol/config.yaml:ro
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
+    networks:
+      - baseledger-net
+
   app:
     build:
       context: .
@@ -49,6 +80,8 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
+      otel-lgtm:
+        condition: service_started
     env_file:
       - .env
     ports:
@@ -58,7 +91,7 @@ services:
       - baseledger-net
 
 volumes:
-  db_data:
+  db_data_v2:
 
 networks:
   baseledger-net:
