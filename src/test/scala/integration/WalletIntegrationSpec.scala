@@ -192,7 +192,7 @@ class WalletIntegrationSpec
         body should include("\"availableBalance\":0")
         body should include("\"reservedBalance\":1000")
       }
-      SEVERE: Failed to export spans. The request could not be executed. Error message: Failed to connect to localhost/[0:0:0:0:0:0:0:1]:4317// 5. Partial Spend Test
+      // 5. Partial Spend Test
       val wallet2 = "wallet-it-partial"
       postJson(s"$baseUrl/wallet/$wallet2/add", """{"idempotencyKey":"add-p1","amount":1000}""").status shouldBe StatusCodes.OK
       postJson(s"$baseUrl/wallet/$wallet2/reserve",
