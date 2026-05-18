@@ -23,12 +23,11 @@ def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTeleme
   val title = "AI Ledger Engine API"
   val version = "0.1.0"
 
-  val swaggerUIOptions = SwaggerUIOptions.default.copy(useRelativePaths = false)
+  val swaggerUIOptions = SwaggerUIOptions.default
   val swaggerEndpoints = SwaggerInterpreter(swaggerUIOptions = swaggerUIOptions)
     .fromServerEndpoints[Future](endpoints, title, version)
-  val swaggerRoute = PekkoHttpServerInterpreter().toRoute(swaggerEndpoints)
 
-  val combinedEndpoints = endpoints ++ swaggerEndpoints
+  val allEndpoints = endpoints ++ swaggerEndpoints
 
   val logReceive = (str: String) => {
     system.log.info(s"Request received: $str")
@@ -78,5 +77,5 @@ def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTeleme
   )
 
   respondWithHeaders(securityHeaders) {
-    PekkoHttpServerInterpreter(serverOptions).toRoute(combinedEndpoints)
+    PekkoHttpServerInterpreter(serverOptions).toRoute(allEndpoints)
   }

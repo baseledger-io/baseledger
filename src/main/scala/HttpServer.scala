@@ -22,7 +22,7 @@ def startHttpServer(routes: Route, host: String, port: Int)(using system: ActorS
         
         system.log.info(s"Server online at $baseUrl/")
         system.log.info(s" ➔ Swagger API Docs : $baseUrl/docs")
-        system.log.info(s" ➔ Liveness Check   : $baseUrl/health")
+        system.log.info(s" ➔ Liveness Check   : $baseUrl/health/live")
         system.log.info(s" ➔ Readiness Check  : $baseUrl/health/ready")
       case Failure(ex) =>
         system.log.error(s"Server could not start!", ex)
