@@ -79,11 +79,11 @@ object WalletRepository:
       .bind(1, walletId)
       .bind(2, eventType)
       .bind(3, amount)
-    holdId match
+    val boundStmt = (holdId match
       case Some(h) => stmt.bind(4, h)
       case None    => stmt.bindNull(4, classOf[String])
-    stmt.bind(5, idempotencyKey)
-    session.updateOne(stmt)
+    ).bind(5, idempotencyKey)
+    session.updateOne(boundStmt)
 
   def upsertHold(
     session: R2dbcSession,
