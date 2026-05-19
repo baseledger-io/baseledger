@@ -12,17 +12,16 @@ import org.apache.pekko.cluster.sharding.typed.scaladsl.ClusterSharding
 import org.apache.pekko.http.scaladsl.server.Route
 import org.apache.pekko.pattern.gracefulStop
 import org.apache.pekko.projection.ProjectionBehavior
-import org.apache.pekko.projection.slick.SlickProjection
 import org.apache.pekko.util.Timeout
 
 import app.RootGuardian.RootCommand.Start
 import domain.WalletActor
 import features.health.HealthRoute
 import features.observability.Observability
+import features.persistence.R2dbcSessionProvider
 import features.wallet.WalletRoute
-import features.wallet.expiration.{ HoldExpirationDispatcher, HoldExpirationMetrics, HoldExpirationRepository }
-import features.wallet.read.{ WalletProjection, WalletRepository }
-import slick.basic.DatabaseConfig
+import features.wallet.expiration.{ HoldExpirationDispatcher, HoldExpirationMetrics }
+import features.wallet.read.WalletProjection
 
 object RootGuardian:
 
@@ -41,25 +40,22 @@ object RootGuardian:
     WalletActor.init(sharding)
     context.log.info("RootGuardian: Sharding initialized.")
 
-    val dbConfig = DatabaseConfig.forConfig[slick.jdbc.PostgresProfile]("pekko.projection.slick", context.system.settings.config)
-    context.log.info("RootGuardian: DB Config loaded.")
-
-    val repo = new WalletRepository(dbConfig.db.asInstanceOf[slick.jdbc.JdbcBackend.Database])
-    val holdExpirationRepo = new HoldExpirationRepository(dbConfig.db.asInstanceOf[slick.jdbc.JdbcBackend.Database])
+    val sessionProvider = R2dbcSessionProvider(context.system)
+    context.log.info("RootGuardian: R2DBC session provider initialized.")
 
     // Start Projection
-    val projectionBehavior = WalletProjection.createBehavior(context.system, repo)
+    val projectionBehavior = WalletProjection.createBehavior(context.system)
     val walletProjectionRef = context.spawn(projectionBehavior, "wallet-projection")
     context.log.info("RootGuardian: Projection spawned.")
 
     // Hold-expiration dispatcher (cluster singleton, polls + sends ReleaseTokens)
-    HoldExpirationDispatcher.init(context.system, holdExpirationRepo, sharding)
+    HoldExpirationDispatcher.init(context.system, sessionProvider, sharding)
     context.log.info("RootGuardian: Hold expiration dispatcher initialized.")
 
     val otel = Observability.init("baseledger")
     context.log.info("RootGuardian: Observability initialized.")
 
-    HoldExpirationMetrics.register(otel.otel, holdExpirationRepo)
+    HoldExpirationMetrics.register(otel.otel, sessionProvider)
     context.log.info("RootGuardian: hold_expiration_queue_depth gauge registered.")
 
     val shutdown = CoordinatedShutdown(context.system)
@@ -79,8 +75,8 @@ object RootGuardian:
     }
     context.log.info("RootGuardian: Coordinated shutdown tasks registered.")
 
-    val walletRoute = WalletRoute(sharding, repo).route
-    val healthRoute = new HealthRoute(dbConfig.db.asInstanceOf[slick.jdbc.JdbcBackend.Database])
+    val walletRoute = WalletRoute(sharding, sessionProvider).route
+    val healthRoute = new HealthRoute(sessionProvider)
     context.log.info("RootGuardian: Routes initialized.")
 
     val endpoints = walletRoute ++ healthRoute.endpoints

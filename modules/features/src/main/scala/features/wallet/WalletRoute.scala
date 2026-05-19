@@ -13,6 +13,7 @@ import domain.WalletActor
 import domain.WalletProtocol.*
 import domain.WalletTypes.*
 import domain.wallet.*
+import features.persistence.R2dbcSessionProvider
 import features.wallet.read.{ WalletRepository, WalletRow }
 import features.{ ApiError, BaseEndpoint }
 import io.github.iltotore.iron.*
@@ -86,7 +87,7 @@ object WalletRoute:
       .out(jsonBody[WalletResponseDto])
       .description("Get wallet balance")
 
-class WalletRoute(sharding: ClusterSharding, repo: WalletRepository)(using system: ActorSystem[?]) extends BaseEndpoint:
+class WalletRoute(sharding: ClusterSharding, sessionProvider: R2dbcSessionProvider)(using system: ActorSystem[?]) extends BaseEndpoint:
   import WalletRoute.*
 
   given ExecutionContext = system.executionContext
@@ -153,7 +154,7 @@ class WalletRoute(sharding: ClusterSharding, repo: WalletRepository)(using syste
           .map(r => handleResponse(id, r))
       },
       getEndpoint.serverLogic { id =>
-        repo.findById(id).map:
+        sessionProvider.withSession(WalletRepository.findById(_, id)).map:
           case Some(row) => Right((StatusCode.Ok, WalletResponseDto(row.id, row.availableBalance, row.reservedBalance)))
           case None => Left((StatusCode.NotFound, ApiError(WalletActor.CodeWalletNotFound, List(s"Wallet $id not found"))))
       }
