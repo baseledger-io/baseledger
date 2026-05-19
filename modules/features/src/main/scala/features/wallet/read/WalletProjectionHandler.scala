@@ -20,6 +20,7 @@ class WalletProjectionHandler(using ec: ExecutionContext)
 
   import WalletRepository.*
 
+  /** Handles a single envelope; dispatches to per-event SQL via `WalletRepository`. */
   override def process(session: R2dbcSession, envelope: EventEnvelope[WalletProtocol.Event]): Future[Done] =
     envelope.eventOption match
       case Some(event) => handle(session, event)

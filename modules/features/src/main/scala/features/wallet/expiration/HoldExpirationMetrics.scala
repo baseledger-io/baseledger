@@ -18,7 +18,7 @@ import features.persistence.R2dbcSessionProvider
  * dispatcher is wedged.
  *
  * ==When==
- * Called once at startup, after [[Observability.init]] and after the
+ * Called once at startup, after `Observability.init` and after the
  * [[HoldExpirationRepository]] is constructed.
  *
  * ==How to extend==

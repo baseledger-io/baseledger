@@ -3,11 +3,14 @@ package domain
 
 import java.io.NotSerializableException
 
+import scala.util.{ Failure, Success }
+
+import org.apache.pekko.actor.ExtendedActorSystem
 import org.apache.pekko.serialization.SerializerWithStringManifest
 
 import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
 
-class ScalaPbSerializer extends SerializerWithStringManifest {
+class ScalaPbSerializer(system: ExtendedActorSystem) extends SerializerWithStringManifest {
   override def identifier: Int = 1001 // Unique ID for this project
 
   override def manifest(o: AnyRef): String = o.getClass.getName
@@ -18,11 +21,12 @@ class ScalaPbSerializer extends SerializerWithStringManifest {
   }
 
   override def fromBinary(bytes: Array[Byte], manifest: String): AnyRef = {
-    try {
-      val companion = Class.forName(manifest + "$").getField("MODULE$").get(null).asInstanceOf[GeneratedMessageCompanion[_]]
-      companion.parseFrom(bytes).asInstanceOf[AnyRef]
-    } catch {
-      case e: Exception => throw new NotSerializableException(
+    val companionClassName = manifest + "$"
+    system.dynamicAccess.getObjectFor[GeneratedMessageCompanion[_]](companionClassName) match {
+      case Success(companion) =>
+        companion.parseFrom(bytes).asInstanceOf[AnyRef]
+      case Failure(e) =>
+        throw new NotSerializableException(
           s"Unable to load companion object for manifest [$manifest]: ${e.getMessage}"
         )
     }
