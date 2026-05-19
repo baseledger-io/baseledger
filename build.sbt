@@ -69,8 +69,6 @@ lazy val features = project
       // Projections
       "org.apache.pekko" %% "pekko-projection-core"         % PekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % PekkoProjectionVersion,
-      "org.apache.pekko" %% "pekko-projection-slick"        % PekkoProjectionVersion,
-      "org.apache.pekko" %% "pekko-connectors-slick"        % PekkoConnectorsVersion,
 
       // Unified Observability (OTel)
       "com.softwaremill.sttp.tapir"           %% "tapir-opentelemetry-metrics"               % TapirVersion,

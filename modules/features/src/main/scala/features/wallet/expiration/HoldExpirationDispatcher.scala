@@ -2,6 +2,7 @@ package features.wallet.expiration
 
 import java.time.Instant
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.*
 import scala.util.{ Failure, Success, Try }
 
@@ -13,6 +14,7 @@ import org.apache.pekko.cluster.typed.{ ClusterSingleton, SingletonActor }
 import domain.WalletActor
 import domain.WalletProtocol.Response
 import domain.wallet.ReleaseTokens
+import features.persistence.R2dbcSessionProvider
 
 /**
  * Cluster singleton that periodically scans `hold_expirations` for due rows
@@ -30,7 +32,7 @@ object HoldExpirationDispatcher:
 
   enum Command:
     case Tick
-    case PollDone(result: Try[Seq[HoldExpirationRow]])
+    case PollDone(result: Try[IndexedSeq[HoldExpirationRow]])
 
   import Command.*
 
@@ -38,29 +40,30 @@ object HoldExpirationDispatcher:
   private val BatchSize: Int = 200
   private val TickTimerKey = "poll-tick"
 
-  def init(system: ActorSystem[?], repo: HoldExpirationRepository, sharding: ClusterSharding): ActorRef[Command] =
+  def init(system: ActorSystem[?], provider: R2dbcSessionProvider, sharding: ClusterSharding): ActorRef[Command] =
     ClusterSingleton(system)
-      .init(SingletonActor(behavior(repo, sharding), "hold-expiration-dispatcher"))
+      .init(SingletonActor(behavior(provider, sharding), "hold-expiration-dispatcher"))
 
-  private def behavior(repo: HoldExpirationRepository, sharding: ClusterSharding): Behavior[Command] =
+  private def behavior(provider: R2dbcSessionProvider, sharding: ClusterSharding): Behavior[Command] =
     Behaviors.setup { context =>
       Behaviors.withTimers { timers =>
         context.self ! Tick // Bootstrap: kick off the first poll immediately, then self-clock.
-        ready(context, timers, repo, sharding)
+        ready(context, timers, provider, sharding)
       }
     }
 
   private def ready(
       context: ActorContext[Command],
       timers: TimerScheduler[Command],
-      repo: HoldExpirationRepository,
+      provider: R2dbcSessionProvider,
       sharding: ClusterSharding
   ): Behavior[Command] =
+    given ExecutionContext = context.executionContext
     Behaviors.receiveMessage {
       case Tick =>
         val now = Instant.now().toEpochMilli
-        context.pipeToSelf(repo.findDue(now, BatchSize))(PollDone.apply)
-        processing(context, timers, repo, sharding)
+        context.pipeToSelf(provider.withSession(HoldExpirationRepository.findDue(_, now, BatchSize)))(PollDone.apply)
+        processing(context, timers, provider, sharding)
 
       case _: PollDone =>
         Behaviors.same // Stale completion (shouldn't happen in this state); ignore.
@@ -69,7 +72,7 @@ object HoldExpirationDispatcher:
   private def processing(
       context: ActorContext[Command],
       timers: TimerScheduler[Command],
-      repo: HoldExpirationRepository,
+      provider: R2dbcSessionProvider,
       sharding: ClusterSharding
   ): Behavior[Command] =
     given resolver: ActorRefResolver = ActorRefResolver(context.system)
@@ -100,5 +103,5 @@ object HoldExpirationDispatcher:
 
         // Schedule the next poll and go back to ready.
         timers.startSingleTimer(TickTimerKey, Tick, PollInterval)
-        ready(context, timers, repo, sharding)
+        ready(context, timers, provider, sharding)
     }

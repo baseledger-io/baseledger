@@ -73,10 +73,6 @@ class WalletIntegrationSpec
          |DB_USER = "${pg.username}"
          |DB_PASSWORD = "${pg.password}"
          |
-         |pekko.projection.slick.db.url = "$jdbcUrl"
-         |pekko.projection.slick.db.user = "${pg.username}"
-         |pekko.projection.slick.db.password = "${pg.password}"
-         |
          |pekko.persistence.r2dbc.dialect = "postgres"
          |pekko.persistence.r2dbc.connection-factory.driver = "postgres"
          |pekko.persistence.r2dbc.connection-factory.host = "${pg.host}"
@@ -92,9 +88,6 @@ class WalletIntegrationSpec
          |pekko.remote.artery.canonical.port = $remote
          |pekko.remote.artery.canonical.hostname = "127.0.0.1"
          |
-         |pekko.projection.slick.profile = "slick.jdbc.PostgresProfile$$"
-         |pekko.projection.slick.db.numThreads = 4
-         |pekko.projection.slick.db.maxConnections = 4
          |""".stripMargin
     ).withFallback(ConfigFactory.load()).resolve()
   }

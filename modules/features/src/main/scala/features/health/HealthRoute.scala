@@ -2,15 +2,13 @@ package features.health
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-import org.apache.pekko.http.scaladsl.server.Directives.*
-import org.apache.pekko.http.scaladsl.server.Route
-
-import slick.jdbc.JdbcBackend
 import sttp.model.StatusCode
 import sttp.tapir.*
 import sttp.tapir.server.ServerEndpoint
 
-class HealthRoute(db: JdbcBackend.Database)(using ec: ExecutionContext) {
+import features.persistence.R2dbcSessionProvider
+
+class HealthRoute(provider: R2dbcSessionProvider)(using ec: ExecutionContext) {
 
   private val liveEndpoint: ServerEndpoint[Any, Future] = endpoint.get
     .in("health")
@@ -23,10 +21,12 @@ class HealthRoute(db: JdbcBackend.Database)(using ec: ExecutionContext) {
     .in("ready")
     .out(statusCode)
     .serverLogic { _ =>
-      import slick.jdbc.PostgresProfile.api.*
-      db.run(sql"SELECT 1".as[Int]).map(_ => Right(StatusCode.Ok)).recover {
-        case _ => Left(StatusCode.ServiceUnavailable)
-      }
+      provider
+        .withSession { session =>
+          session.selectOne(session.createStatement("SELECT 1"))(_ => ())
+        }
+        .map(_ => Right(StatusCode.Ok))
+        .recover { case _ => Left(StatusCode.ServiceUnavailable) }
     }
 
   val endpoints: List[ServerEndpoint[Any, Future]] = List(liveEndpoint, readyEndpoint)

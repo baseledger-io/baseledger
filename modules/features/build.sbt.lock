@@ -1,6 +1,6 @@
 {
   "lockVersion" : 1,
-  "timestamp" : "2026-05-09T05:10:38.912939576Z",
+  "timestamp" : "2026-05-19T01:40:51.428975951Z",
   "configurations" : [
     "compile",
     "optional",
@@ -891,54 +891,6 @@
       ]
     },
     {
-      "org" : "com.typesafe.slick",
-      "name" : "slick-hikaricp_3",
-      "version" : "3.5.1",
-      "artifacts" : [
-        {
-          "name" : "slick-hikaricp_3.jar",
-          "hash" : "sha1:398ce934a311286ee03f0b297e157b93fb57a95e"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "com.typesafe.slick",
-      "name" : "slick_3",
-      "version" : "3.5.1",
-      "artifacts" : [
-        {
-          "name" : "slick_3.jar",
-          "hash" : "sha1:9bec55cb3290ec790162e99218e4f2a41558848f"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "com.zaxxer",
-      "name" : "HikariCP",
-      "version" : "4.0.3",
-      "artifacts" : [
-        {
-          "name" : "HikariCP.jar",
-          "hash" : "sha1:107cbdf0db6780a065f895ae9d8fbf3bb0e1c21f"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
       "org" : "io.baseledger",
       "name" : "common_3",
       "version" : "0.1.0",
@@ -1468,22 +1420,6 @@
     },
     {
       "org" : "io.opentelemetry",
-      "name" : "opentelemetry-exporter-prometheus",
-      "version" : "1.43.0-alpha",
-      "artifacts" : [
-        {
-          "name" : "opentelemetry-exporter-prometheus.jar",
-          "hash" : "sha1:ab3dd77675d137c41c266d63a84edaa130a1e470"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.opentelemetry",
       "name" : "opentelemetry-exporter-sender-okhttp",
       "version" : "1.43.0",
       "artifacts" : [
@@ -1522,6 +1458,22 @@
         {
           "name" : "opentelemetry-sdk-common.jar",
           "hash" : "sha1:8f2bb94d9d9fe070de698b973c1f1f247a166dcf"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.opentelemetry",
+      "name" : "opentelemetry-sdk-extension-autoconfigure",
+      "version" : "1.43.0",
+      "artifacts" : [
+        {
+          "name" : "opentelemetry-sdk-extension-autoconfigure.jar",
+          "hash" : "sha1:6361141c682452fe2f6a69a5b753f6540f1bc908"
         }
       ],
       "configurations" : [
@@ -1650,102 +1602,6 @@
         {
           "name" : "reactor-netty-core.jar",
           "hash" : "sha1:08356b59b29f86e7142c9daca0434653a64ae64b"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-config",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-config.jar",
-          "hash" : "sha1:576be55933c63e85ad69d53feef1eace08b799ab"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-exporter-common",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-exporter-common.jar",
-          "hash" : "sha1:e680d7e58a4524678346c6c1cd115b861d668a74"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-exporter-httpserver",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-exporter-httpserver.jar",
-          "hash" : "sha1:b393819d5d857cb730b05101b8b5e304e77fd7c6"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-exposition-formats",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-exposition-formats.jar",
-          "hash" : "sha1:6b449cd4b4cd72122c8e592aeb1d04ef95a0073b"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-model",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-model.jar",
-          "hash" : "sha1:2d5f8ccd0732577a1f28ec0e7cc63b7b76037a04"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "io.prometheus",
-      "name" : "prometheus-metrics-shaded-protobuf",
-      "version" : "1.3.1",
-      "artifacts" : [
-        {
-          "name" : "prometheus-metrics-shaded-protobuf.jar",
-          "hash" : "sha1:3f12750bfe77f4a57734b3aa230981cbf4c9cc4e"
         }
       ],
       "configurations" : [
@@ -1922,22 +1778,6 @@
         {
           "name" : "pekko-cluster_3.jar",
           "hash" : "sha1:c3933dc59bb9a11e1925517fa8e9703367dee7db"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "org.apache.pekko",
-      "name" : "pekko-connectors-slick_3",
-      "version" : "1.3.0",
-      "artifacts" : [
-        {
-          "name" : "pekko-connectors-slick_3.jar",
-          "hash" : "sha1:18771c2a4d7fee61b4df52a4d886e129d136291c"
         }
       ],
       "configurations" : [
@@ -2140,44 +1980,12 @@
     },
     {
       "org" : "org.apache.pekko",
-      "name" : "pekko-projection-jdbc_3",
-      "version" : "1.1.0",
-      "artifacts" : [
-        {
-          "name" : "pekko-projection-jdbc_3.jar",
-          "hash" : "sha1:8d0c47ff8e33e3f698419ad8539007a45b4ed593"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "org.apache.pekko",
       "name" : "pekko-projection-r2dbc_3",
       "version" : "1.1.0",
       "artifacts" : [
         {
           "name" : "pekko-projection-r2dbc_3.jar",
           "hash" : "sha1:08f188913ef4fecee60234056c80bfaa4abb436a"
-        }
-      ],
-      "configurations" : [
-        "compile",
-        "runtime",
-        "test"
-      ]
-    },
-    {
-      "org" : "org.apache.pekko",
-      "name" : "pekko-projection-slick_3",
-      "version" : "1.1.0",
-      "artifacts" : [
-        {
-          "name" : "pekko-projection-slick_3.jar",
-          "hash" : "sha1:50ab491fb17088032c67872d848618fc0726292c"
         }
       ],
       "configurations" : [

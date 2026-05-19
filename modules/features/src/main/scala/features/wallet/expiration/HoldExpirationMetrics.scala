@@ -7,6 +7,8 @@ import scala.util.{ Failure, Success, Try }
 import io.opentelemetry.api.OpenTelemetry
 import org.slf4j.LoggerFactory
 
+import features.persistence.R2dbcSessionProvider
+
 /**
  * Registers the `hold_expiration_queue_depth` async gauge.
  *
@@ -16,7 +18,7 @@ import org.slf4j.LoggerFactory
  * dispatcher is wedged.
  *
  * ==When==
- * Called once at startup, after [[Observability.init]] and after the
+ * Called once at startup, after `Observability.init` and after the
  * [[HoldExpirationRepository]] is constructed.
  *
  * ==How to extend==
@@ -31,7 +33,7 @@ object HoldExpirationMetrics:
   // 2-second cap prevents a misbehaving DB from stalling the scrape.
   private val GaugeQueryTimeout: FiniteDuration = 2.seconds
 
-  def register(otel: OpenTelemetry, repo: HoldExpirationRepository)(using ExecutionContext): Unit =
+  def register(otel: OpenTelemetry, provider: R2dbcSessionProvider)(using ExecutionContext): Unit =
     val meter = otel.getMeter("baseledger.wallet.expiration")
     val _ = meter
       .gaugeBuilder("hold_expiration_queue_depth")
@@ -39,7 +41,7 @@ object HoldExpirationMetrics:
       .setUnit("1")
       .ofLongs()
       .buildWithCallback { measurement =>
-        Try(Await.result(repo.countAll(), GaugeQueryTimeout)) match
+        Try(Await.result(provider.withSession(HoldExpirationRepository.countAll), GaugeQueryTimeout)) match
           case Success(n) => measurement.record(n)
           case Failure(t) =>
             log.warn("hold_expiration_queue_depth gauge query failed: {}", t.getMessage)

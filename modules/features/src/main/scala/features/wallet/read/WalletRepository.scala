@@ -4,116 +4,127 @@ import java.util.UUID
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-import domain.WalletProtocol
-import domain.wallet.*
-import features.wallet.expiration.{ HoldExpirationRow, HoldExpirations }
-import slick.dbio.DBIO
-import slick.jdbc.JdbcBackend
-import slick.jdbc.PostgresProfile.api.*
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
-case class WalletRow(
+import features.wallet.expiration.HoldExpirationRow
+
+final case class WalletRow(
     id: String,
     availableBalance: Long,
     reservedBalance: Long,
     lastEventAt: Long
 )
 
-case class TransactionRow(
-    txId: UUID,
+/**
+ * Pure SQL access to the wallet read model. Every method takes the
+ * `R2dbcSession` it should run on so the caller controls the transactional
+ * context — the projection handler supplies its own session (offset commit +
+ * write share one tx), HTTP / dispatcher / metrics callers borrow one via
+ * [[features.persistence.R2dbcSessionProvider]].
+ */
+object WalletRepository:
+
+  def findById(session: R2dbcSession, id: String)(using ExecutionContext): Future[Option[WalletRow]] =
+    val stmt = session
+      .createStatement(
+        "SELECT id, available_balance, reserved_balance, last_event_at FROM wallets WHERE id = $1"
+      )
+      .bind(0, id)
+
+    session.selectOne(stmt): row =>
+      WalletRow(
+        row.get("id", classOf[String]),
+        row.get("available_balance", classOf[java.lang.Long]).longValue(),
+        row.get("reserved_balance", classOf[java.lang.Long]).longValue(),
+        row.get("last_event_at", classOf[java.lang.Long]).longValue()
+      )
+
+  def upsertBalance(
+      session: R2dbcSession,
+      id: String,
+      availableDelta: Long,
+      reservedDelta: Long,
+      ts: Long
+  )(using ExecutionContext): Future[Long] =
+    val stmt = session
+      .createStatement(
+        """INSERT INTO wallets (id, available_balance, reserved_balance, last_event_at)
+          |VALUES ($1, $2, $3, $4)
+          |ON CONFLICT (id) DO UPDATE SET
+          |  available_balance = wallets.available_balance + EXCLUDED.available_balance,
+          |  reserved_balance  = wallets.reserved_balance  + EXCLUDED.reserved_balance,
+          |  last_event_at     = EXCLUDED.last_event_at
+          |WHERE EXCLUDED.last_event_at > wallets.last_event_at""".stripMargin
+      )
+      .bind(0, id)
+      .bind(1, availableDelta)
+      .bind(2, reservedDelta)
+      .bind(3, ts)
+    session.updateOne(stmt)
+
+  def insertTransaction(
+      session: R2dbcSession,
+      walletId: String,
+      eventType: String,
+      amount: Long,
+      holdId: Option[String],
+      idempotencyKey: String
+  )(using ExecutionContext): Future[Long] =
+    val stmt = session
+      .createStatement(
+        """INSERT INTO wallet_transactions (tx_id, wallet_id, event_type, amount, hold_id, idempotency_key)
+          |VALUES ($1, $2, $3, $4, $5, $6)""".stripMargin
+      )
+      .bind(0, UUID.randomUUID())
+      .bind(1, walletId)
+      .bind(2, eventType)
+      .bind(3, amount)
+    val boundStmt = (holdId match
+      case Some(h) => stmt.bind(4, h)
+      case None    => stmt.bindNull(4, classOf[String])
+    ).bind(5, idempotencyKey)
+    session.updateOne(boundStmt)
+
+  def upsertHold(
+    session: R2dbcSession,
+    holdId: String,
     walletId: String,
-    eventType: String,
-    amount: Long,
-    holdId: Option[String],
-    idempotencyKey: String
-)
+    expiresAtMs: Long,
+    amount: Long
+  )(using ExecutionContext): Future[Long] =
+    val stmt = session
+      .createStatement(
+        """INSERT INTO hold_expirations (hold_id, wallet_id, expires_at_ms, amount)
+          |VALUES ($1, $2, $3, $4)
+          |ON CONFLICT (hold_id) DO UPDATE SET
+          |  wallet_id     = EXCLUDED.wallet_id,
+          |  expires_at_ms = EXCLUDED.expires_at_ms,
+          |  amount        = EXCLUDED.amount""".stripMargin
+      )
+      .bind(0, holdId)
+      .bind(1, walletId)
+      .bind(2, expiresAtMs)
+      .bind(3, amount)
 
-class Wallets(tag: Tag) extends Table[WalletRow](tag, "wallets"):
-  def id = column[String]("id", O.PrimaryKey)
-  def availableBalance = column[Long]("available_balance")
-  def reservedBalance = column[Long]("reserved_balance")
-  def lastEventAt = column[Long]("last_event_at")
+    session.updateOne(stmt)
 
-  def * = (id, availableBalance, reservedBalance, lastEventAt).mapTo[WalletRow]
+  def deleteHold(session: R2dbcSession, holdId: String)(using ExecutionContext): Future[Long] =
+    val stmt = session
+      .createStatement("DELETE FROM hold_expirations WHERE hold_id = $1")
+      .bind(0, holdId)
 
-class WalletTransactions(tag: Tag) extends Table[TransactionRow](tag, "wallet_transactions"):
-  def txId = column[UUID]("tx_id", O.PrimaryKey)
-  def walletId = column[String]("wallet_id")
-  def eventType = column[String]("event_type")
-  def amount = column[Long]("amount")
-  def holdId = column[Option[String]]("hold_id")
-  def idempotencyKey = column[String]("idempotency_key")
+    session.updateOne(stmt)
 
-  def * = (txId, walletId, eventType, amount, holdId, idempotencyKey).mapTo[TransactionRow]
+  def findHold(session: R2dbcSession, holdId: String)(using ExecutionContext): Future[Option[HoldExpirationRow]] =
 
-class WalletRepository(db: JdbcBackend.Database):
-  private val wallets = TableQuery[Wallets]
-  private val transactions = TableQuery[WalletTransactions]
-  private val holds = TableQuery[HoldExpirations]
+    val stmt = session
+      .createStatement("SELECT hold_id, wallet_id, expires_at_ms, amount FROM hold_expirations WHERE hold_id = $1")
+      .bind(0, holdId)
 
-  /**
-   * Processes a single wallet event and updates the read-side state atomically.
-   * This is called by the Pekko Projection handler.
-   */
-  def handleEvent(event: WalletProtocol.Event)(using ec: ExecutionContext): DBIO[Unit] =
-    event match
-      case e: TokensAdded =>
-        for
-          _ <- updateBalance(e.id, availableDelta = e.amount, reservedDelta = 0, e.timestamp)
-          _ <- logTransaction(e.id, "ADDED", e.amount, None, e.idempotencyKey)
-        yield ()
-
-      case e: TokensReserved =>
-        for
-          _ <- updateBalance(e.id, availableDelta = -e.amount, reservedDelta = e.amount, e.timestamp)
-          _ <- logTransaction(e.id, "RESERVED", e.amount, Some(e.holdId), e.idempotencyKey)
-          _ <- holds.insertOrUpdate(HoldExpirationRow(e.holdId, e.id, e.expiresAtMs, e.amount))
-        yield ()
-
-      case e: TokensSpent =>
-        // Partial capture: look up the original hold to compute the unrealized remainder.
-        // The full hold is closed — spent portion is deducted, remainder returns to available.
-        holds.filter(_.holdId === e.holdId).result.headOption.flatMap:
-          case Some(hold) =>
-            val releaseAmount = hold.amount - e.amount
-            for
-              _ <- updateBalance(e.id, availableDelta = releaseAmount, reservedDelta = -hold.amount, e.timestamp)
-              _ <- logTransaction(e.id, "SPENT", e.amount, Some(e.holdId), e.idempotencyKey)
-              _ <- holds.filter(_.holdId === e.holdId).delete
-            yield ()
-          case None =>
-            // Hold not found in projection — fall back to simple deduction
-            for
-              _ <- updateBalance(e.id, availableDelta = 0, reservedDelta = -e.amount, e.timestamp)
-              _ <- logTransaction(e.id, "SPENT", e.amount, Some(e.holdId), e.idempotencyKey)
-            yield ()
-
-      case e: TokensReleased =>
-        // Use the 'holds' table as a memory to find the amount that was originally reserved
-        holds.filter(_.holdId === e.holdId).result.headOption.flatMap:
-          case Some(hold) =>
-            for
-              _ <- updateBalance(e.id, availableDelta = hold.amount, reservedDelta = -hold.amount, e.timestamp)
-              _ <- logTransaction(e.id, "RELEASED", hold.amount, Some(e.holdId), e.idempotencyKey)
-              _ <- holds.filter(_.holdId === e.holdId).delete
-            yield ()
-          case None =>
-            DBIO.successful(())
-
-  private def updateBalance(id: String, availableDelta: Long, reservedDelta: Long, ts: Long): DBIO[Int] =
-    sqlu"""INSERT INTO wallets (id, available_balance, reserved_balance, last_event_at)
-           VALUES ($id, $availableDelta, $reservedDelta, $ts)
-           ON CONFLICT (id) DO UPDATE SET
-             available_balance = wallets.available_balance + $availableDelta,
-             reserved_balance = wallets.reserved_balance + $reservedDelta,
-             last_event_at = EXCLUDED.last_event_at
-           WHERE EXCLUDED.last_event_at > wallets.last_event_at"""
-
-  private def logTransaction(walletId: String, eventType: String, amount: Long, holdId: Option[String], idempotencyKey: String): DBIO[Int] =
-    val tx = TransactionRow(UUID.randomUUID(), walletId, eventType, amount, holdId, idempotencyKey)
-    transactions += tx
-
-  def findByIdAction(id: String): DBIO[Option[WalletRow]] =
-    wallets.filter(_.id === id).result.headOption
-
-  def findById(id: String): Future[Option[WalletRow]] =
-    db.run(findByIdAction(id))
+    session.selectOne(stmt): row =>
+      HoldExpirationRow(
+        row.get("hold_id", classOf[String]),
+        row.get("wallet_id", classOf[String]),
+        row.get("expires_at_ms", classOf[java.lang.Long]).longValue(),
+        row.get("amount", classOf[java.lang.Long]).longValue()
+      )

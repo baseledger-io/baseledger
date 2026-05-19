@@ -517,7 +517,9 @@
       "methods": [
         {
           "name": "<init>",
-          "parameterTypes": []
+          "parameterTypes": [
+            "org.apache.pekko.actor.ExtendedActorSystem"
+          ]
         }
       ]
     },
@@ -555,7 +557,105 @@
       ]
     },
     {
+      "type": "domain.wallet.ReleaseTokens$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.ReserveTokens$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.SpendTokens$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
       "type": "domain.wallet.TokensAdded$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.TokensReleased$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.TokensReserved$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.TokensSpent$",
+      "fields": [
+        {
+          "name": "MODULE$"
+        },
+        {
+          "name": "defaultInstance$lzy1"
+        },
+        {
+          "name": "nestedMessagesCompanions$lzy1"
+        }
+      ]
+    },
+    {
+      "type": "domain.wallet.WalletFailure$",
       "fields": [
         {
           "name": "MODULE$"
