@@ -23,6 +23,14 @@ Depending on how you intend to run BaseLedger, you will need:
 
 The fastest way to get started is spinning up the pre-configured PostgreSQL instance and the BaseLedger API via containers.
 
+First, set up your environment variables by copying the default configuration:
+
+```bash
+cp .env.example .env
+```
+
+Then, start the stack:
+
 **Using Docker:**
 ```bash
 docker-compose up -d
@@ -119,10 +127,12 @@ BaseLedger is designed for absolute correctness. It uses **Event Sourcing** and 
 
 ## Configuration
 
+BaseLedger is configured via environment variables. For local development, copy the provided `.env.example` to `.env` and modify it as needed.
+
 | Variable            | Description       | Default     |
 | ------------------- | ----------------- | ----------- |
 | `POSTGRES_HOST`     | Database host     | `localhost` |
-| `POSTGRES_PORT`     | Database port     | `3210`      |
+| `POSTGRES_PORT`     | Database port     | `5432`      |
 | `POSTGRES_DB`       | Database name     | `baseledger`|
 | `POSTGRES_USER`     | Database user     | `baseledger`|
 | `POSTGRES_PASSWORD` | Database password | `password`  |
@@ -150,13 +160,13 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://your-collector:4317
 
 ## Local Development (From Source)
 
-Ensure you have **JDK 17+** installed and a local PostgreSQL database running on port `3210`. 
+Ensure you have **JDK 17+** installed and a local PostgreSQL database running on port `5432`. 
 
 **1. Apply Database Migrations:**
 BaseLedger requires the database schema to be initialized before booting. Use the Flyway CLI to run the migrations located in the resources directory:
 
 ```bash
-flyway -url=jdbc:postgresql://localhost:3210/baseledger -user=baseledger -password=password -locations=filesystem:src/main/resources/db/migrations migrate
+flyway -url=jdbc:postgresql://localhost:5432/baseledger -user=baseledger -password=password -locations=filesystem:src/main/resources/db/migrations migrate
 ```
 
 *(Alternatively, you can just run `docker-compose up -d db migrations` to spin up the DB and run the migrations, then run `./sbtx run` locally).*
