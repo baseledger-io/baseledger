@@ -3520,6 +3520,22 @@
       ]
     },
     {
+      "type": "org.apache.pekko.remote.serialization.ProtobufSerializer",
+      "fields": [
+        {
+          "name": "serialization$lzy1"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.pekko.actor.ExtendedActorSystem"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.apache.pekko.remote.serialization.MiscMessageSerializer",
       "fields": [
         {
