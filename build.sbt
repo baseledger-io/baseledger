@@ -111,6 +111,7 @@ lazy val root = project
       "--no-fallback",
       "--install-exit-handlers",
       "--enable-url-protocols=http,https",
+      "--enable-native-access=ALL-UNNAMED",
       "--static",
       "--libc=musl",
       "-O3",
