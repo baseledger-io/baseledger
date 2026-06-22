@@ -81,16 +81,16 @@ object WalletRepository:
       .bind(3, amount)
     val boundStmt = (holdId match
       case Some(h) => stmt.bind(4, h)
-      case None    => stmt.bindNull(4, classOf[String])
+      case None => stmt.bindNull(4, classOf[String])
     ).bind(5, idempotencyKey)
     session.updateOne(boundStmt)
 
   def upsertHold(
-    session: R2dbcSession,
-    holdId: String,
-    walletId: String,
-    expiresAtMs: Long,
-    amount: Long
+      session: R2dbcSession,
+      holdId: String,
+      walletId: String,
+      expiresAtMs: Long,
+      amount: Long
   )(using ExecutionContext): Future[Long] =
     val stmt = session
       .createStatement(

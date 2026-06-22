@@ -1,6 +1,19 @@
 {
   "reflection": [
     {
+      "type": "com.sun.management.OperatingSystemMXBean",
+      "methods": [
+        {
+          "name": "getProcessCpuTime",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessCpuLoad",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "android.os.Build$VERSION"
     },
     {
@@ -34,7 +47,42 @@
       ]
     },
     {
+      "type": "ch.qos.logback.classic.AsyncAppender",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "ch.qos.logback.core.ConsoleAppender",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.rolling.RollingFileAppender",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.rolling.TimeBasedRollingPolicy",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
       "methods": [
         {
           "name": "<init>",

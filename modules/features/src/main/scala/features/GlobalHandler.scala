@@ -28,7 +28,16 @@ object GlobalHandler:
         val errorMsg = extractEnumError(err.getMessage)
         (StatusCode.BadRequest, ApiError("Bad Request", List(errorMsg)))
 
-      // Case 2: Handle generic / unexpected failures
+      // Case 2: Overload / backpressure. An ask to a wallet entity that does not
+      // reply within the configured timeout (e.g. the write pipeline is
+      // saturated) surfaces as a TimeoutException — Pekko's AskTimeoutException
+      // extends java.util.concurrent.TimeoutException. This is NOT an internal
+      // fault: it is the server shedding load, and the client should retry.
+      // Map it to 503 so callers back off instead of treating it as a 500.
+      case _: java.util.concurrent.TimeoutException =>
+        (StatusCode.ServiceUnavailable, ApiError("SERVICE_OVERLOADED", List("The service is overloaded, please retry.")))
+
+      // Case 3: Handle generic / unexpected failures
       case _ =>
         (StatusCode.InternalServerError, ApiError("Internal Server Error", List("An unexpected error occurred.")))
 

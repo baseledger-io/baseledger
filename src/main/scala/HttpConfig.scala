@@ -65,7 +65,8 @@ def configureHttp(endpoints: List[ServerEndpoint[Any, Future]], otel: OpenTeleme
           doLogAllDecodeFailures = logDecodeFailure,
           doLogExceptions = logExceptions,
           noLog = Future.successful(()),
-          logWhenReceived = true,
+          logWhenReceived = false,
+          logWhenHandled = false,
           logAllDecodeFailures = true,
           logLogicExceptions = true
         ))

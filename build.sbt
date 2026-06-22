@@ -25,6 +25,20 @@ ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / scalafixOnCompile := false
 
+ThisBuild / assemblyMergeStrategy := {
+  case x if x.endsWith("module-info.class") => MergeStrategy.discard
+  case x if x.endsWith(".proto") => MergeStrategy.discard
+  case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
+  case PathList("reference.conf") => MergeStrategy.concat
+  case PathList("application.conf") => MergeStrategy.concat
+  case PathList("META-INF", "services", _*) => MergeStrategy.concat
+  case PathList("META-INF", "native-image", _*) => MergeStrategy.first
+  case PathList("META-INF", "versions", _*) => MergeStrategy.first
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case PathList("META-INF", _*) => MergeStrategy.first
+  case _ => MergeStrategy.first
+}
+
 lazy val common = project
   .in(file("modules/common"))
   .settings(
@@ -80,7 +94,8 @@ lazy val features = project
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros"                     % JsoniterVersion % "provided",
       "io.opentelemetry"                       % "opentelemetry-sdk"                         % "1.43.0",
       "io.opentelemetry"                       % "opentelemetry-exporter-otlp"               % "1.43.0",
-      "io.opentelemetry"                       % "opentelemetry-sdk-extension-autoconfigure" % "1.43.0"
+      "io.opentelemetry"                       % "opentelemetry-sdk-extension-autoconfigure" % "1.43.0",
+      "io.opentelemetry.instrumentation"       % "opentelemetry-runtime-telemetry-java8"     % "2.9.0-alpha"
     )
   )
 

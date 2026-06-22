@@ -6,15 +6,39 @@
         </encoder>
     </appender>
 
+    <!-- Define the File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/baseledger.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/baseledger.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+        <queueSize>8192</queueSize>
+        <!-- Keep all log levels, don't discard TRACE, DEBUG, INFO when queue is 80% full -->
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+    </appender>
+
     <!-- Persistence & Driver noise reduction -->
-    <logger name="io.r2dbc" level="INFO"/>
-    <logger name="reactor" level="INFO"/>
-    <logger name="org.apache.pekko" level="INFO"/>
-    
-    <!-- SQL Logging -->
-    <logger name="slick.jdbc.JdbcBackend.statement" level="WARN"/>
+    <logger name="io.r2dbc" level="INFO" />
+    <logger name="reactor" level="INFO" />
+    <logger name="org.apache.pekko" level="INFO" />
+    <!-- The r2dbc journal/state DAOs log every insert at INFO, which is hot-path
+         noise under load. Raise just these library loggers to WARN; the root
+         stays at INFO to keep useful lifecycle/operational signal. -->
+    <logger name="org.apache.pekko.persistence.r2dbc.journal.JournalDao" level="WARN" />
+    <logger name="org.apache.pekko.persistence.r2dbc.state.DurableStateDao" level="WARN" />
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ASYNC" />
     </root>
 </configuration>

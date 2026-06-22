@@ -45,7 +45,8 @@ object WalletActor:
         ),
         commandHandler = (state, command) => handleCommand(state, command),
         eventHandler = (state, event) => applyEvent(state, event)
-      ).withTagger(_ => Set("wallet"))
+      )
+        .withTagger(_ => Set("wallet"))
         .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 100, keepNSnapshots = 2))
     }
 
