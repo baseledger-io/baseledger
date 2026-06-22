@@ -1,14 +1,23 @@
 {
   "lockVersion" : 1,
-  "timestamp" : "2026-06-22T04:41:08.302008748Z",
+  "timestamp" : "2026-06-22T04:41:08.629300152Z",
   "configurations" : [
     "compile",
+    "debian",
+    "docker",
+    "graalvm-native-image",
+    "linux",
     "optional",
     "protobuf",
     "provided",
+    "rpm",
     "runtime",
     "scalafix",
-    "test"
+    "test",
+    "universal",
+    "universal-docs",
+    "universal-src",
+    "windows"
   ],
   "dependencies" : [
     {
@@ -56,6 +65,62 @@
       "configurations" : [
         "compile",
         "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.dimafeng",
+      "name" : "testcontainers-scala-core_3",
+      "version" : "0.41.4",
+      "artifacts" : [
+        {
+          "name" : "testcontainers-scala-core_3.jar",
+          "hash" : "sha1:d48ce51d4d5b18edbc07125fb9a9f4a7c57effd0"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "com.dimafeng",
+      "name" : "testcontainers-scala-jdbc_3",
+      "version" : "0.41.4",
+      "artifacts" : [
+        {
+          "name" : "testcontainers-scala-jdbc_3.jar",
+          "hash" : "sha1:7e75b376bd10552fee2f401c38dcb2e13f8f5c6f"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "com.dimafeng",
+      "name" : "testcontainers-scala-postgresql_3",
+      "version" : "0.41.4",
+      "artifacts" : [
+        {
+          "name" : "testcontainers-scala-postgresql_3.jar",
+          "hash" : "sha1:57fc09e7d5acd34aa96a55ea60638abb101f26d5"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "com.dimafeng",
+      "name" : "testcontainers-scala-scalatest_3",
+      "version" : "0.41.4",
+      "artifacts" : [
+        {
+          "name" : "testcontainers-scala-scalatest_3.jar",
+          "hash" : "sha1:37c2e208bb78da6c947fb5162f38de9e73df0176"
+        }
+      ],
+      "configurations" : [
         "test"
       ]
     },
@@ -188,6 +253,48 @@
       ]
     },
     {
+      "org" : "com.github.docker-java",
+      "name" : "docker-java-api",
+      "version" : "3.3.3",
+      "artifacts" : [
+        {
+          "name" : "docker-java-api.jar",
+          "hash" : "sha1:22f9e8d0dc5a89fbcfb8e5182b36a49d989f87a0"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.docker-java",
+      "name" : "docker-java-transport",
+      "version" : "3.3.3",
+      "artifacts" : [
+        {
+          "name" : "docker-java-transport.jar",
+          "hash" : "sha1:13e7e159a902df2236f6ded371842bf579a8446b"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "com.github.docker-java",
+      "name" : "docker-java-transport-zerodep",
+      "version" : "3.3.3",
+      "artifacts" : [
+        {
+          "name" : "docker-java-transport-zerodep.jar",
+          "hash" : "sha1:df303392ef9ee91d9069b259505eda84dcc4999b"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "com.github.jnr",
       "name" : "jffi",
       "version" : "1.3.13",
@@ -279,23 +386,8 @@
       ],
       "configurations" : [
         "compile",
-        "provided",
         "runtime",
         "test"
-      ]
-    },
-    {
-      "org" : "com.github.plokhotnyuk.jsoniter-scala",
-      "name" : "jsoniter-scala-macros_3",
-      "version" : "2.38.9",
-      "artifacts" : [
-        {
-          "name" : "jsoniter-scala-macros_3.jar",
-          "hash" : "sha1:477b24bda96857259745470fc45c1d94c5cd650a"
-        }
-      ],
-      "configurations" : [
-        "provided"
       ]
     },
     {
@@ -898,12 +990,21 @@
       ],
       "configurations" : [
         "compile",
+        "debian",
+        "docker",
+        "graalvm-native-image",
+        "linux",
         "optional",
         "protobuf",
         "provided",
+        "rpm",
         "runtime",
         "scalafix",
-        "test"
+        "test",
+        "universal",
+        "universal-docs",
+        "universal-src",
+        "windows"
       ]
     },
     {
@@ -914,12 +1015,71 @@
       ],
       "configurations" : [
         "compile",
+        "debian",
+        "docker",
+        "graalvm-native-image",
+        "linux",
         "optional",
         "protobuf",
         "provided",
+        "rpm",
         "runtime",
         "scalafix",
-        "test"
+        "test",
+        "universal",
+        "universal-docs",
+        "universal-src",
+        "windows"
+      ]
+    },
+    {
+      "org" : "io.baseledger",
+      "name" : "features_3",
+      "version" : "0.1.0",
+      "artifacts" : [
+      ],
+      "configurations" : [
+        "compile",
+        "debian",
+        "docker",
+        "graalvm-native-image",
+        "linux",
+        "optional",
+        "protobuf",
+        "provided",
+        "rpm",
+        "runtime",
+        "scalafix",
+        "test",
+        "universal",
+        "universal-docs",
+        "universal-src",
+        "windows"
+      ]
+    },
+    {
+      "org" : "io.baseledger",
+      "name" : "tests_3",
+      "version" : "0.1.0",
+      "artifacts" : [
+      ],
+      "configurations" : [
+        "compile",
+        "debian",
+        "docker",
+        "graalvm-native-image",
+        "linux",
+        "optional",
+        "protobuf",
+        "provided",
+        "rpm",
+        "runtime",
+        "scalafix",
+        "test",
+        "universal",
+        "universal-docs",
+        "universal-src",
+        "windows"
       ]
     },
     {
@@ -1691,6 +1851,34 @@
       ]
     },
     {
+      "org" : "junit",
+      "name" : "junit",
+      "version" : "4.13.2",
+      "artifacts" : [
+        {
+          "name" : "junit.jar",
+          "hash" : "sha1:8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "net.java.dev.jna",
+      "name" : "jna",
+      "version" : "5.12.1",
+      "artifacts" : [
+        {
+          "name" : "jna.jar",
+          "hash" : "sha1:b1e93a735caea94f503e95e6fe79bf9cdc1e985d"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "net.logstash.logback",
       "name" : "logstash-logback-encoder",
       "version" : "9.0",
@@ -1719,6 +1907,34 @@
       "configurations" : [
         "compile",
         "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.commons",
+      "name" : "commons-compress",
+      "version" : "1.24.0",
+      "artifacts" : [
+        {
+          "name" : "commons-compress.jar",
+          "hash" : "sha1:b4b1b5a3d9573b2970fddab236102c0a4d27d35e"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-actor-testkit-typed_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-actor-testkit-typed_3.jar",
+          "hash" : "sha1:ecf66e1db4ab394c4323e8e6fe0b4fd1e6f5f7ea"
+        }
+      ],
+      "configurations" : [
         "test"
       ]
     },
@@ -1884,6 +2100,20 @@
     },
     {
       "org" : "org.apache.pekko",
+      "name" : "pekko-http-testkit_3",
+      "version" : "1.3.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-http-testkit_3.jar",
+          "hash" : "sha1:bae4fbf3a5ae1a1543610e31b605a79e89c70628"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
       "name" : "pekko-http_3",
       "version" : "1.3.0",
       "artifacts" : [
@@ -1943,6 +2173,20 @@
       "configurations" : [
         "compile",
         "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-persistence-testkit_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-persistence-testkit_3.jar",
+          "hash" : "sha1:0273c5b1726934afdfe6103142588c410dea99b2"
+        }
+      ],
+      "configurations" : [
         "test"
       ]
     },
@@ -2044,6 +2288,20 @@
     },
     {
       "org" : "org.apache.pekko",
+      "name" : "pekko-projection-testkit_3",
+      "version" : "1.1.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-projection-testkit_3.jar",
+          "hash" : "sha1:f204cc8ec50945587e9128d4714f7a1f43daed61"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
       "name" : "pekko-protobuf-v3_3",
       "version" : "1.5.0",
       "artifacts" : [
@@ -2108,6 +2366,20 @@
     },
     {
       "org" : "org.apache.pekko",
+      "name" : "pekko-stream-testkit_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-stream-testkit_3.jar",
+          "hash" : "sha1:05158e6d936f02c9e803afa27449469eba485dd8"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.apache.pekko",
       "name" : "pekko-stream-typed_3",
       "version" : "1.5.0",
       "artifacts" : [
@@ -2139,6 +2411,20 @@
       ]
     },
     {
+      "org" : "org.apache.pekko",
+      "name" : "pekko-testkit_3",
+      "version" : "1.5.0",
+      "artifacts" : [
+        {
+          "name" : "pekko-testkit_3.jar",
+          "hash" : "sha1:a8590d4b183b7c47a92f4e2b9f46e438ee5ee5a2"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "org.checkerframework",
       "name" : "checker-qual",
       "version" : "3.52.0",
@@ -2155,6 +2441,48 @@
       ]
     },
     {
+      "org" : "org.flywaydb",
+      "name" : "flyway-core",
+      "version" : "11.8.2",
+      "artifacts" : [
+        {
+          "name" : "flyway-core.jar",
+          "hash" : "sha1:f16b66204a4d67abd016b6a67ee11a7c36932e24"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.flywaydb",
+      "name" : "flyway-database-postgresql",
+      "version" : "11.8.2",
+      "artifacts" : [
+        {
+          "name" : "flyway-database-postgresql.jar",
+          "hash" : "sha1:ecd14631d587d92e2310dd0e97f0dee8d0190b44"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.hamcrest",
+      "name" : "hamcrest-core",
+      "version" : "1.3",
+      "artifacts" : [
+        {
+          "name" : "hamcrest-core.jar",
+          "hash" : "sha1:42a25dc3219429f0e5d060061f71acb49bf010a0"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "org.jetbrains",
       "name" : "annotations",
       "version" : "13.0",
@@ -2166,7 +2494,20 @@
       ],
       "configurations" : [
         "compile",
-        "runtime",
+        "runtime"
+      ]
+    },
+    {
+      "org" : "org.jetbrains",
+      "name" : "annotations",
+      "version" : "17.0.0",
+      "artifacts" : [
+        {
+          "name" : "annotations.jar",
+          "hash" : "sha1:8ceead41f4e71821919dbdb7a9847608f1a938cb"
+        }
+      ],
+      "configurations" : [
         "test"
       ]
     },
@@ -2395,6 +2736,20 @@
       ]
     },
     {
+      "org" : "org.rnorth.duct-tape",
+      "name" : "duct-tape",
+      "version" : "1.0.8",
+      "artifacts" : [
+        {
+          "name" : "duct-tape.jar",
+          "hash" : "sha1:92edc22a9ab2f3e17c9bf700aaee377d50e8b530"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "org.scala-lang",
       "name" : "scala-library",
       "version" : "2.13.16",
@@ -2406,7 +2761,6 @@
       ],
       "configurations" : [
         "compile",
-        "provided",
         "runtime",
         "test"
       ]
@@ -2423,7 +2777,6 @@
       ],
       "configurations" : [
         "compile",
-        "provided",
         "runtime",
         "test"
       ]
@@ -2445,6 +2798,272 @@
       ]
     },
     {
+      "org" : "org.scala-lang.modules",
+      "name" : "scala-xml_3",
+      "version" : "2.1.0",
+      "artifacts" : [
+        {
+          "name" : "scala-xml_3.jar",
+          "hash" : "sha1:08825dfc740fdf5b0b3900ee7b62cdbfea3483b8"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scala-sbt",
+      "name" : "test-interface",
+      "version" : "1.0",
+      "artifacts" : [
+        {
+          "name" : "test-interface.jar",
+          "hash" : "sha1:0a3f14d010c4cb32071f863d97291df31603b521"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalacheck",
+      "name" : "scalacheck_3",
+      "version" : "1.19.0",
+      "artifacts" : [
+        {
+          "name" : "scalacheck_3.jar",
+          "hash" : "sha1:2e00b871ca4b5658a8e939c0875130202b0a9960"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalactic",
+      "name" : "scalactic_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalactic_3.jar",
+          "hash" : "sha1:bb7dec9c0fec006b871b9d94519b5fb70571f506"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-compatible",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-compatible.jar",
+          "hash" : "sha1:977b070f967647331c11fd0632e7f7c8b86984ca"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-core_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-core_3.jar",
+          "hash" : "sha1:8a2767dbd32783726251afa0cd0f65a0255b7cc9"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-diagrams_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-diagrams_3.jar",
+          "hash" : "sha1:81102d8cfaa4f7ce467033975d12cb47f69dd2b4"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-featurespec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-featurespec_3.jar",
+          "hash" : "sha1:c1980c30f492f77a989723952b18f2b18c2a210c"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-flatspec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-flatspec_3.jar",
+          "hash" : "sha1:cdf9ab8b951ebcb01154d157103dd925c836f4f4"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-freespec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-freespec_3.jar",
+          "hash" : "sha1:0065578d501f2a8864fd6777f6423acb859f1547"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-funspec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-funspec_3.jar",
+          "hash" : "sha1:4cfb750357f0855d35e8ed7c668bdb7067cc69ea"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-funsuite_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-funsuite_3.jar",
+          "hash" : "sha1:6f05976bc328218221221f978531e6d50ee7691e"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-matchers-core_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-matchers-core_3.jar",
+          "hash" : "sha1:a4c6781cbd3c9ef4d0fdea49b76aa9b86d006de9"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-mustmatchers_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-mustmatchers_3.jar",
+          "hash" : "sha1:f7402af1d535067193724e02332a32102ac676c8"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-propspec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-propspec_3.jar",
+          "hash" : "sha1:b2315d084d45553ab14c5d384dd449da624c811e"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-refspec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-refspec_3.jar",
+          "hash" : "sha1:84b77e22edeceb0c67aba933ab73795caf11c694"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-shouldmatchers_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-shouldmatchers_3.jar",
+          "hash" : "sha1:3eaf9ca3efbf24af11bad18fd7f4ea50f4d7d655"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-wordspec_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest-wordspec_3.jar",
+          "hash" : "sha1:49957310d42cde80ec326a9368643cbf4a59a1f7"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest_3",
+      "version" : "3.2.20",
+      "artifacts" : [
+        {
+          "name" : "scalatest_3.jar",
+          "hash" : "sha1:a70d4275cee9a70d7c53ca2caada70bb6fb75bd8"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
       "org" : "org.slf4j",
       "name" : "slf4j-api",
       "version" : "2.0.17",
@@ -2457,6 +3076,62 @@
       "configurations" : [
         "compile",
         "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.testcontainers",
+      "name" : "database-commons",
+      "version" : "1.19.1",
+      "artifacts" : [
+        {
+          "name" : "database-commons.jar",
+          "hash" : "sha1:68e218cd7512c2f6d926f75a618c8934afe4502a"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.testcontainers",
+      "name" : "jdbc",
+      "version" : "1.19.1",
+      "artifacts" : [
+        {
+          "name" : "jdbc.jar",
+          "hash" : "sha1:064330b3d52218aff60f8abd13803932cc445d8f"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.testcontainers",
+      "name" : "postgresql",
+      "version" : "1.19.1",
+      "artifacts" : [
+        {
+          "name" : "postgresql.jar",
+          "hash" : "sha1:ac7c21ffe1191e9abf49f20e7fddf4c7a74f8ecd"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    },
+    {
+      "org" : "org.testcontainers",
+      "name" : "testcontainers",
+      "version" : "1.19.1",
+      "artifacts" : [
+        {
+          "name" : "testcontainers.jar",
+          "hash" : "sha1:eaad6e005a0792a1ee537bd3e7d3113e8d3315b1"
+        }
+      ],
+      "configurations" : [
         "test"
       ]
     },
