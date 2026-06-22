@@ -19,7 +19,7 @@ object HoldExpirationRepository:
     val stmt = session
       .createStatement(
         "SELECT hold_id, wallet_id, expires_at_ms, amount FROM hold_expirations " +
-          "WHERE expires_at_ms <= $1 ORDER BY expires_at_ms ASC LIMIT $2"
+        "WHERE expires_at_ms <= $1 ORDER BY expires_at_ms ASC LIMIT $2"
       )
       .bind(0, nowMs)
       .bind(1, limit)
@@ -38,4 +38,3 @@ object HoldExpirationRepository:
     session
       .selectOne(stmt)(row => row.get("c", classOf[java.lang.Long]).longValue())
       .map(_.getOrElse(0L))
-

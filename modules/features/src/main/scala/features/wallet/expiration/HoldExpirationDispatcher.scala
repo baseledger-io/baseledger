@@ -40,9 +40,17 @@ object HoldExpirationDispatcher:
   private val BatchSize: Int = 200
   private val TickTimerKey = "poll-tick"
 
-  def init(system: ActorSystem[?], provider: R2dbcSessionProvider, sharding: ClusterSharding): ActorRef[Command] =
+  def init(
+      system: ActorSystem[?],
+      provider: R2dbcSessionProvider,
+      sharding: ClusterSharding,
+      dispatcher: DispatcherSelector
+  ): ActorRef[Command] =
     ClusterSingleton(system)
-      .init(SingletonActor(behavior(provider, sharding), "hold-expiration-dispatcher"))
+      .init(
+        SingletonActor(behavior(provider, sharding), "hold-expiration-dispatcher")
+          .withProps(dispatcher)
+      )
 
   private def behavior(provider: R2dbcSessionProvider, sharding: ClusterSharding): Behavior[Command] =
     Behaviors.setup { context =>

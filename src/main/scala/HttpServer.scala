@@ -17,9 +17,10 @@ def startHttpServer(routes: Route, host: String, port: Int)(using system: ActorS
     .onComplete {
       case Success(binding) =>
         binding.addToCoordinatedShutdown(hardTerminationDeadline = 10.seconds)
-        val hostStr = if binding.localAddress.getHostString == "0:0:0:0:0:0:0:0" || binding.localAddress.getHostString == "0.0.0.0" then "localhost" else binding.localAddress.getHostString
+        val hostStr = if binding.localAddress.getHostString == "0:0:0:0:0:0:0:0" || binding.localAddress.getHostString == "0.0.0.0" then "localhost"
+        else binding.localAddress.getHostString
         val baseUrl = s"http://$hostStr:${binding.localAddress.getPort}"
-        
+
         system.log.info(s"Server online at $baseUrl/")
         system.log.info(s" ➔ Swagger API Docs : $baseUrl/docs")
         system.log.info(s" ➔ Liveness Check   : $baseUrl/health/live")

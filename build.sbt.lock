@@ -1,6 +1,6 @@
 {
   "lockVersion" : 1,
-  "timestamp" : "2026-05-19T01:40:51.720654461Z",
+  "timestamp" : "2026-06-22T04:41:08.629300152Z",
   "configurations" : [
     "compile",
     "debian",
@@ -1698,6 +1698,54 @@
         {
           "name" : "opentelemetry-sdk-trace.jar",
           "hash" : "sha1:69619c6433ebf0fe5196f7c3fe18bd543279b451"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.opentelemetry.instrumentation",
+      "name" : "opentelemetry-instrumentation-api",
+      "version" : "2.9.0",
+      "artifacts" : [
+        {
+          "name" : "opentelemetry-instrumentation-api.jar",
+          "hash" : "sha1:d5d9208c35e53bca234a7badee709976464614c8"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.opentelemetry.instrumentation",
+      "name" : "opentelemetry-instrumentation-api-incubator",
+      "version" : "2.9.0-alpha",
+      "artifacts" : [
+        {
+          "name" : "opentelemetry-instrumentation-api-incubator.jar",
+          "hash" : "sha1:e9cd5f29fec417794432a80afa8f9e7ef42ca813"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.opentelemetry.instrumentation",
+      "name" : "opentelemetry-runtime-telemetry-java8",
+      "version" : "2.9.0-alpha",
+      "artifacts" : [
+        {
+          "name" : "opentelemetry-runtime-telemetry-java8.jar",
+          "hash" : "sha1:e064fa592b6ad363663c69eaddb8026d699e9ff6"
         }
       ],
       "configurations" : [

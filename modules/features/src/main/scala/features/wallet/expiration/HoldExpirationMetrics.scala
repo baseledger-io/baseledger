@@ -1,8 +1,6 @@
 package features.wallet.expiration
 
-import scala.concurrent.duration.*
-import scala.concurrent.{ Await, ExecutionContext }
-import scala.util.{ Failure, Success, Try }
+import scala.concurrent.ExecutionContext
 
 import io.opentelemetry.api.OpenTelemetry
 import org.slf4j.LoggerFactory
@@ -28,11 +26,6 @@ import features.persistence.R2dbcSessionProvider
 object HoldExpirationMetrics:
   private val log = LoggerFactory.getLogger(getClass)
 
-  // Block briefly on the count query inside the gauge callback. The
-  // callback runs on OTel's own scrape thread and is short-lived; a
-  // 2-second cap prevents a misbehaving DB from stalling the scrape.
-  private val GaugeQueryTimeout: FiniteDuration = 2.seconds
-
   def register(otel: OpenTelemetry, provider: R2dbcSessionProvider)(using ExecutionContext): Unit =
     val meter = otel.getMeter("baseledger.wallet.expiration")
     val _ = meter
@@ -41,8 +34,8 @@ object HoldExpirationMetrics:
       .setUnit("1")
       .ofLongs()
       .buildWithCallback { measurement =>
-        Try(Await.result(provider.withSession(HoldExpirationRepository.countAll), GaugeQueryTimeout)) match
-          case Success(n) => measurement.record(n)
-          case Failure(t) =>
-            log.warn("hold_expiration_queue_depth gauge query failed: {}", t.getMessage)
+        provider
+          .withReadSession(HoldExpirationRepository.countAll)
+          .map(measurement.record)
+          .recover { case t => log.warn("hold_expiration_queue_depth gauge query failed: {}", t.getMessage) }
       }

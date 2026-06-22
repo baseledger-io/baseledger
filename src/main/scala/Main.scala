@@ -1,11 +1,7 @@
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 import org.apache.pekko.actor.typed.ActorSystem
 
 import app.{ Migrations, RootGuardian }
 import com.typesafe.config.ConfigFactory
-import features.wallet.expiration.HoldExpirationDispatcher
 
 object Main:
   def main(args: Array[String]): Unit =
@@ -15,6 +11,9 @@ object Main:
 
     val system = ActorSystem(RootGuardian(), "baseledger", config)
 
-    system.whenTerminated.foreach(_ => println("BaseLedger shut down successfully."))(system.executionContext)
-
-    Await.result(system.whenTerminated, Duration.Inf)
+    system.whenTerminated.onComplete {
+      case scala.util.Success(_) =>
+        println("BaseLedger shut down successfully.")
+      case scala.util.Failure(e) =>
+        println(s"BaseLedger shut down with error: $e")
+    }(system.executionContext)

@@ -81,6 +81,17 @@ class WalletIntegrationSpec
          |pekko.persistence.r2dbc.connection-factory.user = "${pg.username}"
          |pekko.persistence.r2dbc.connection-factory.password = "${pg.password}"
          |
+         |# Point the separate READ-side pool at the same container. Without this
+         |# the read-side-connection-factory resolves ${'$'}{POSTGRES_*} to the
+         |# TestEnv defaults (localhost / baseledger) and every read-path query
+         |# (health/ready, GET, hold-expiration scan) fails authentication.
+         |read-side-connection-factory.driver = "postgres"
+         |read-side-connection-factory.host = "${pg.host}"
+         |read-side-connection-factory.port = ${pg.firstMappedPort}
+         |read-side-connection-factory.database = "${pg.databaseName}"
+         |read-side-connection-factory.user = "${pg.username}"
+         |read-side-connection-factory.password = "${pg.password}"
+         |
          |http.port = $http
          |http.host = "127.0.0.1"
          |

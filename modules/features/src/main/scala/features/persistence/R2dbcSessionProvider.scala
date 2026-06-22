@@ -29,9 +29,9 @@ final class R2dbcSessionProvider private (connectionFactory: ConnectionFactory)(
     acquire().flatMap { conn =>
       val attempt =
         for
-          _      <- toFuture(conn.beginTransaction())
+          _ <- toFuture(conn.beginTransaction())
           result <- fn(new R2dbcSession(conn))
-          _      <- toFuture(conn.commitTransaction())
+          _ <- toFuture(conn.commitTransaction())
         yield result
 
       attempt
@@ -41,6 +41,12 @@ final class R2dbcSessionProvider private (connectionFactory: ConnectionFactory)(
             .flatMap(_ => Future.failed(err))
         }
         .andThen { case _ => toFuture(conn.close()) }
+    }
+
+  def withReadSession[A](fn: R2dbcSession => Future[A]): Future[A] =
+    acquire().flatMap { conn =>
+      val attempt = fn(new R2dbcSession(conn))
+      attempt.andThen { case _ => toFuture(conn.close()) }
     }
 
   private def acquire(): Future[Connection] =

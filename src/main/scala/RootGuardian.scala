@@ -19,9 +19,11 @@ import domain.WalletActor
 import features.health.HealthRoute
 import features.observability.Observability
 import features.persistence.R2dbcSessionProvider
+import features.persistence.R2dbcPoolMetrics
 import features.wallet.WalletRoute
 import features.wallet.expiration.{ HoldExpirationDispatcher, HoldExpirationMetrics }
 import features.wallet.read.WalletProjection
+import org.apache.pekko.actor.typed.DispatcherSelector
 
 object RootGuardian:
 
@@ -40,23 +42,29 @@ object RootGuardian:
     WalletActor.init(sharding)
     context.log.info("RootGuardian: Sharding initialized.")
 
-    val sessionProvider = R2dbcSessionProvider(context.system)
+    val sessionProvider = R2dbcSessionProvider(context.system, "read-side-connection-factory")
     context.log.info("RootGuardian: R2DBC session provider initialized.")
 
     // Start Projection
+    val projectionDispatcher = DispatcherSelector.fromConfig("projection-dispatcher")
+    val databaseReaderDispatcher = DispatcherSelector.fromConfig("database-reader-dispatcher")
     val projectionBehavior = WalletProjection.createBehavior(context.system)
-    val walletProjectionRef = context.spawn(projectionBehavior, "wallet-projection")
+    val walletProjectionRef = context.spawn(projectionBehavior, "wallet-projection", projectionDispatcher)
     context.log.info("RootGuardian: Projection spawned.")
 
     // Hold-expiration dispatcher (cluster singleton, polls + sends ReleaseTokens)
-    HoldExpirationDispatcher.init(context.system, sessionProvider, sharding)
+    HoldExpirationDispatcher.init(context.system, sessionProvider, sharding, databaseReaderDispatcher)
     context.log.info("RootGuardian: Hold expiration dispatcher initialized.")
 
     val otel = Observability.init("baseledger")
     context.log.info("RootGuardian: Observability initialized.")
 
-    HoldExpirationMetrics.register(otel.otel, sessionProvider)
+    val dbDispatcher = context.system.dispatchers.lookup(databaseReaderDispatcher)
+    HoldExpirationMetrics.register(otel.otel, sessionProvider)(using dbDispatcher)
     context.log.info("RootGuardian: hold_expiration_queue_depth gauge registered.")
+
+    R2dbcPoolMetrics.register(otel.otel)
+    context.log.info("RootGuardian: r2dbc pool gauges registered.")
 
     val shutdown = CoordinatedShutdown(context.system)
 
@@ -71,12 +79,13 @@ object RootGuardian:
     }
 
     shutdown.addTask(CoordinatedShutdown.PhaseActorSystemTerminate, "shutdown-observability") { () =>
-      Future { otel.shutdown(); Done }
+      val blockingEc = context.system.dispatchers.lookup(DispatcherSelector.blocking())
+      Future { otel.shutdown(); Done }(blockingEc)
     }
     context.log.info("RootGuardian: Coordinated shutdown tasks registered.")
 
     val walletRoute = WalletRoute(sharding, sessionProvider).route
-    val healthRoute = new HealthRoute(sessionProvider)
+    val healthRoute = new HealthRoute(sessionProvider)(using dbDispatcher)
     context.log.info("RootGuardian: Routes initialized.")
 
     val endpoints = walletRoute ++ healthRoute.endpoints

@@ -4,7 +4,7 @@ import com.typesafe.config.Config
 import org.slf4j.LoggerFactory
 
 /**
- * Lightweight migration check placeholder. Actual migrations are handled 
+ * Lightweight migration check placeholder. Actual migrations are handled
  * by the docker-compose sidecar for Native Image stability.
  */
 object Migrations:

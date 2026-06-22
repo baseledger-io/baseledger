@@ -22,7 +22,7 @@ class HealthRoute(provider: R2dbcSessionProvider)(using ec: ExecutionContext) {
     .out(statusCode)
     .serverLogic { _ =>
       provider
-        .withSession { session =>
+        .withReadSession { session =>
           session.selectOne(session.createStatement("SELECT 1"))(_ => ())
         }
         .map(_ => Right(StatusCode.Ok))

@@ -1,10 +1,13 @@
 package features.wallet
 
+import java.util.concurrent.TimeoutException
+
 import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future }
 
 import org.apache.pekko.actor.typed.{ ActorRefResolver, ActorSystem, Scheduler }
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ClusterSharding
+import org.apache.pekko.actor.typed.DispatcherSelector.fromConfig
 import org.apache.pekko.util.Timeout
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
@@ -94,6 +97,7 @@ class WalletRoute(sharding: ClusterSharding, sessionProvider: R2dbcSessionProvid
   given Scheduler = system.scheduler
   given Timeout(3.seconds)
   private val resolver = ActorRefResolver(system)
+  private val dbEc = system.dispatchers.lookup(fromConfig("database-reader-dispatcher"))
 
   private val codeToStatus: Map[String, StatusCode] = Map(
     WalletActor.CodeIdempotencyConflict -> StatusCode.Conflict,
@@ -112,15 +116,28 @@ class WalletRoute(sharding: ClusterSharding, sessionProvider: R2dbcSessionProvid
         val status = codeToStatus.getOrElse(code, StatusCode.BadRequest)
         Left((status, ApiError(code, List(reason))))
 
+  // Overload backpressure: when the wallet `ask` exceeds its 3 s timeout the
+  // Future fails with AskTimeoutException (a TimeoutException). Recovering it to
+  // a 503 result here means the failure never propagates as a thrown exception,
+  // so Tapir's `logLogicExceptions` does not fire a per-request ERROR log under
+  // load. Genuine bugs still throw and are still logged.
+  private val serviceOverloaded: Either[(StatusCode, ApiError), (StatusCode, WalletResponseDto)] =
+    Left((StatusCode.ServiceUnavailable, ApiError("SERVICE_OVERLOADED", List("The service is overloaded, please retry."))))
+
+  private def completeWrite(id: String, resp: => Future[Response]): Future[Either[(StatusCode, ApiError), (StatusCode, WalletResponseDto)]] =
+    resp
+      .map(r => handleResponse(id, r))
+      .recover { case _: TimeoutException => serviceOverloaded }
+
   val route: List[ServerEndpoint[Any, Future]] =
     List(
       addEndpoint.serverLogic { (id, req) =>
         req.amount.refineEither[Positive] match {
           case Right(validAmount) =>
-            sharding.entityRefFor(WalletActor.TypeKey, id)
-              .ask[Response](replyTo =>
-                AddTokens(id, req.idempotencyKey, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
-              .map(r => handleResponse(id, r))
+            completeWrite(id,
+              sharding.entityRefFor(WalletActor.TypeKey, id)
+                .ask[Response](replyTo =>
+                  AddTokens(id, req.idempotencyKey, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty))))
           case Left(errorMsg) =>
             Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
         }
@@ -128,11 +145,11 @@ class WalletRoute(sharding: ClusterSharding, sessionProvider: R2dbcSessionProvid
       reserveEndpoint.serverLogic { (id, req) =>
         req.amount.refineEither[Positive] match {
           case Right(validAmount) =>
-            sharding.entityRefFor(WalletActor.TypeKey, id)
-              .ask[Response](replyTo =>
-                ReserveTokens(id, req.idempotencyKey, req.holdId, validAmount, req.ttlSeconds, resolver.toSerializationFormat(replyTo),
-                  req.metadata.getOrElse(Map.empty)))
-              .map(r => handleResponse(id, r))
+            completeWrite(id,
+              sharding.entityRefFor(WalletActor.TypeKey, id)
+                .ask[Response](replyTo =>
+                  ReserveTokens(id, req.idempotencyKey, req.holdId, validAmount, req.ttlSeconds, resolver.toSerializationFormat(replyTo),
+                    req.metadata.getOrElse(Map.empty))))
           case Left(errorMsg) =>
             Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
         }
@@ -140,22 +157,23 @@ class WalletRoute(sharding: ClusterSharding, sessionProvider: R2dbcSessionProvid
       spendEndpoint.serverLogic { (id, req) =>
         req.amount.refineEither[Positive] match
           case Right(validAmount) =>
-            sharding.entityRefFor(WalletActor.TypeKey, id)
-              .ask[Response](replyTo =>
-                SpendTokens(id, req.idempotencyKey, req.holdId, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
-              .map(r => handleResponse(id, r))
+            completeWrite(id,
+              sharding.entityRefFor(WalletActor.TypeKey, id)
+                .ask[Response](replyTo =>
+                  SpendTokens(id, req.idempotencyKey, req.holdId, validAmount, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty))))
           case Left(errorMsg) =>
             Future.successful(Left((StatusCode.BadRequest, ApiError("VALIDATION_ERROR", List(s"Amount must be strictly positive: $errorMsg")))))
       },
       releaseEndpoint.serverLogic { (id, req) =>
-        sharding.entityRefFor(WalletActor.TypeKey, id)
-          .ask[Response](replyTo =>
-            ReleaseTokens(id, req.idempotencyKey, req.holdId, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty)))
-          .map(r => handleResponse(id, r))
+        completeWrite(id,
+          sharding.entityRefFor(WalletActor.TypeKey, id)
+            .ask[Response](replyTo =>
+              ReleaseTokens(id, req.idempotencyKey, req.holdId, resolver.toSerializationFormat(replyTo), req.metadata.getOrElse(Map.empty))))
       },
       getEndpoint.serverLogic { id =>
-        sessionProvider.withSession(WalletRepository.findById(_, id)).map:
+        sessionProvider.withReadSession(WalletRepository.findById(_, id)(using dbEc)).map {
           case Some(row) => Right((StatusCode.Ok, WalletResponseDto(row.id, row.availableBalance, row.reservedBalance)))
           case None => Left((StatusCode.NotFound, ApiError(WalletActor.CodeWalletNotFound, List(s"Wallet $id not found"))))
+        }(using dbEc)
       }
     )

@@ -10,21 +10,28 @@ import domain.WalletProtocol
 import domain.wallet.*
 
 /**
- * Per-envelope projection handler. Pattern-matches `WalletProtocol.Event`
+ * Batch projection handler. Pattern-matches sequences of `WalletProtocol.Event`
  * and orchestrates [[WalletRepository]] calls against the session supplied
  * by `pekko-projection-r2dbc` (same session that commits the offset, so
  * write + offset commit are one transaction).
  */
 class WalletProjectionHandler(using ec: ExecutionContext)
-    extends R2dbcHandler[EventEnvelope[WalletProtocol.Event]]:
+    extends R2dbcHandler[Seq[EventEnvelope[WalletProtocol.Event]]]:
 
   import WalletRepository.*
 
-  /** Handles a single envelope; dispatches to per-event SQL via `WalletRepository`. */
-  override def process(session: R2dbcSession, envelope: EventEnvelope[WalletProtocol.Event]): Future[Done] =
-    envelope.eventOption match
-      case Some(event) => handle(session, event)
-      case None        => Future.successful(Done)
+  /** Handles a batch of envelopes sequentially; dispatches to per-event SQL via `WalletRepository`. */
+  override def process(
+      session: R2dbcSession,
+      envelopes: Seq[EventEnvelope[WalletProtocol.Event]]
+  ): Future[Done] =
+    envelopes.foldLeft(Future.successful[Done](Done)) { (acc, envelope) =>
+      acc.flatMap { _ =>
+        envelope.eventOption match
+          case Some(event) => handle(session, event)
+          case None => Future.successful[Done](Done)
+      }
+    }
 
   private def handle(session: R2dbcSession, event: WalletProtocol.Event): Future[Done] =
     event match
