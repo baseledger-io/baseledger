@@ -122,7 +122,12 @@ lazy val root = project
   .settings(
     name                := "baseledger",
     Compile / mainClass := Some("Main"),
+    assembly / mainClass := Some("Main"),
+    assembly / assemblyJarName := "baseledger.jar",
     GraalVMNativeImagePlugin.autoImport.graalVMNativeImageOptions ++= Seq(
+      "--enable-monitoring=jfr,jvmstat,jcmd,threaddump,heapdump,nmt",
+      "-H:+PreserveFramePointer",
+      "-g",
       "--no-fallback",
       "--install-exit-handlers",
       "--enable-url-protocols=http,https",
