@@ -76,7 +76,9 @@ lazy val features = project
     libraryDependencies ++= Seq(
       // Persistence (Drivers only)
       "org.postgresql"    % "postgresql"              % "42.7.10",
-      "org.apache.pekko" %% "pekko-persistence-r2dbc" % "1.1.0",
+      // "org.apache.pekko" %% "pekko-persistence-r2dbc" % "1.1.0",
+      "org.apache.pekko" %% "pekko-persistence-r2dbc"  % "1.1.1-batched-unnest-SNAPSHOT",
+
       "org.apache.pekko" %% "pekko-projection-r2dbc"  % "1.1.0",
       "org.postgresql"    % "r2dbc-postgresql"        % "1.1.1.RELEASE",
 
@@ -95,7 +97,9 @@ lazy val features = project
       "io.opentelemetry"                       % "opentelemetry-sdk"                         % "1.43.0",
       "io.opentelemetry"                       % "opentelemetry-exporter-otlp"               % "1.43.0",
       "io.opentelemetry"                       % "opentelemetry-sdk-extension-autoconfigure" % "1.43.0",
-      "io.opentelemetry.instrumentation"       % "opentelemetry-runtime-telemetry-java8"     % "2.9.0-alpha"
+      "io.opentelemetry.instrumentation"       % "opentelemetry-runtime-telemetry-java8"     % "2.9.0-alpha",
+      // Logback -> OTLP logs bridge (feeds application logs into the OTel SDK log pipeline)
+      "io.opentelemetry.instrumentation"       % "opentelemetry-logback-appender-1.0"        % "2.9.0-alpha"
     )
   )
 
@@ -132,9 +136,10 @@ lazy val root = project
       "--install-exit-handlers",
       "--enable-url-protocols=http,https",
       "--enable-native-access=ALL-UNNAMED",
-      "--static",
-      "--libc=musl",
+      "--gc=G1",
+      "--static-nolibc",
       "-O3",
+      "-R:MaxHeapSize=8g",
       "-J-Xmx6g",
       "--initialize-at-build-time=scala.runtime.Statics$VM",
       "--initialize-at-run-time=io.netty",
@@ -157,7 +162,7 @@ lazy val root = project
       "-H:IncludeResources=reference\\.conf",
       "-H:+UnlockExperimentalVMOptions",
       "-H:+ReportExceptionStackTraces"
-    ),
+    ) ++ sys.env.get("NATIVE_IMAGE_CC").toSeq.map(cc => s"-H:CCompilerPath=$cc"),
     libraryDependencies ++= Seq(
       "org.scalatest"    %% "scalatest"                       % "3.2.20"         % Test,
       "org.apache.pekko" %% "pekko-testkit"                   % PekkoVersion     % Test,

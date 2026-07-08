@@ -28,6 +28,20 @@
         <neverBlock>true</neverBlock>
     </appender>
 
+    <!-- OpenTelemetry appender: bridges Logback events into the OTel SDK log
+         pipeline (OTLP -> collector -> Loki). Kept on the synchronous path so the
+         active trace context / MDC is captured for log<->trace correlation; the SDK's
+         BatchLogRecordProcessor batches and exports off-thread, so it stays non-blocking.
+         captureCodeAttributes is off to avoid caller-data cost on the hot path. -->
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+        <captureExperimentalAttributes>false</captureExperimentalAttributes>
+        <captureCodeAttributes>false</captureCodeAttributes>
+        <captureMarkerAttribute>true</captureMarkerAttribute>
+        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+        <captureLoggerContext>true</captureLoggerContext>
+        <captureMdcAttributes>*</captureMdcAttributes>
+    </appender>
+
     <!-- Persistence & Driver noise reduction -->
     <logger name="io.r2dbc" level="INFO" />
     <logger name="reactor" level="INFO" />
@@ -40,5 +54,6 @@
 
     <root level="INFO">
         <appender-ref ref="ASYNC" />
+        <appender-ref ref="OTEL" />
     </root>
 </configuration>
