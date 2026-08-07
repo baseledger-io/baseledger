@@ -1,6 +1,6 @@
 {
   "lockVersion" : 1,
-  "timestamp" : "2026-06-22T04:41:08.429931431Z",
+  "timestamp" : "2026-07-08T20:16:01.705054197Z",
   "configurations" : [
     "compile",
     "optional",
@@ -1581,6 +1581,22 @@
     },
     {
       "org" : "io.opentelemetry.instrumentation",
+      "name" : "opentelemetry-logback-appender-1.0",
+      "version" : "2.9.0-alpha",
+      "artifacts" : [
+        {
+          "name" : "opentelemetry-logback-appender-1.0.jar",
+          "hash" : "sha1:69ebea783bf992886411ca83076cdc16d44d12c8"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "io.opentelemetry.instrumentation",
       "name" : "opentelemetry-runtime-telemetry-java8",
       "version" : "2.9.0-alpha",
       "artifacts" : [
@@ -1948,11 +1964,11 @@
     {
       "org" : "org.apache.pekko",
       "name" : "pekko-persistence-r2dbc_3",
-      "version" : "1.1.0",
+      "version" : "1.1.1-batched-unnest-SNAPSHOT",
       "artifacts" : [
         {
           "name" : "pekko-persistence-r2dbc_3.jar",
-          "hash" : "sha1:f33f8334241cba2b5c608a53b08b71f67261028a"
+          "hash" : "sha1:402ce4df8415eef397284877d0b2c71c4980176a"
         }
       ],
       "configurations" : [

@@ -92,6 +92,13 @@ class WalletIntegrationSpec
          |read-side-connection-factory.user = "${pg.username}"
          |read-side-connection-factory.password = "${pg.password}"
          |
+         |projection-connection-factory.driver = "postgres"
+         |projection-connection-factory.host = "${pg.host}"
+         |projection-connection-factory.port = ${pg.firstMappedPort}
+         |projection-connection-factory.database = "${pg.databaseName}"
+         |projection-connection-factory.user = "${pg.username}"
+         |projection-connection-factory.password = "${pg.password}"
+         |
          |http.port = $http
          |http.host = "127.0.0.1"
          |
