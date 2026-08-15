@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+  <info organisation="org.apache.pekko" module="pekko-persistence-r2dbc_3" revision="1.1.1-batched-unnest-SNAPSHOT" status="integration" publication="20260703123534">
+    <description>An Apache Pekko Persistence implementation backed by SQL database with R2DBC</description>
+  </info>
+  <configurations>
+    <conf name="plugin" visibility="public" description=""/>
+    <conf name="pom" visibility="public" description=""/>
+    <conf extends="runtime" name="test" visibility="public" description=""/>
+    <conf name="provided" visibility="public" description=""/>
+    <conf extends="compile,optional,provided" name="compile-internal" visibility="public" description=""/>
+    <conf name="reproducibleBuilds" visibility="public" description=""/>
+    <conf name="docs" visibility="public" description=""/>
+    <conf name="optional" visibility="public" description=""/>
+    <conf name="compile" visibility="public" description=""/>
+    <conf extends="test,optional,provided" name="test-internal" visibility="public" description=""/>
+    <conf name="scala-tool" visibility="public" description=""/>
+    <conf name="scala-doc-tool" visibility="public" description=""/>
+    <conf name="sources" visibility="public" description=""/>
+    <conf extends="compile" name="runtime" visibility="public" description=""/>
+    <conf extends="runtime,optional" name="runtime-internal" visibility="public" description=""/>
+  </configurations>
+  <publications>
+    <artifact name="pekko-persistence-r2dbc_3" type="jar" ext="jar" conf="compile"/>
+    <artifact e:classifier="sources" name="pekko-persistence-r2dbc_3" type="src" ext="jar" conf="sources"/>
+    <artifact e:classifier="javadoc" name="pekko-persistence-r2dbc_3" type="doc" ext="jar" conf="docs"/>
+    <artifact name="pekko-persistence-r2dbc_3" type="pom" ext="pom" conf="pom"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.scala-lang" name="scala3-compiler_3" rev="3.3.6" conf="scala-tool->default(compile)"> </dependency>
+    <dependency org="org.scala-lang" name="scaladoc_3" rev="3.3.6" conf="scala-doc-tool->default(compile)"> </dependency>
+    <dependency org="org.scala-lang" name="scala3-library_3" rev="3.3.6" conf="compile->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-persistence-typed_3" rev="1.2.0" conf="compile->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-persistence-query_3" rev="1.2.0" conf="compile->default(runtime)"> </dependency>
+    <dependency org="io.r2dbc" name="r2dbc-spi" rev="1.0.0.RELEASE" conf="compile->default(runtime)"> </dependency>
+    <dependency org="io.r2dbc" name="r2dbc-pool" rev="1.0.2.RELEASE" conf="compile->default(runtime)"> </dependency>
+    <dependency org="org.postgresql" name="r2dbc-postgresql" rev="1.0.7.RELEASE" conf="provided->default(runtime)"> </dependency>
+    <dependency org="org.postgresql" name="r2dbc-postgresql" rev="1.0.7.RELEASE" conf="test->default(runtime)"> </dependency>
+    <dependency org="io.asyncer" name="r2dbc-mysql" rev="1.4.1" conf="provided->default(runtime)"> </dependency>
+    <dependency org="io.asyncer" name="r2dbc-mysql" rev="1.4.1" conf="test->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-persistence-tck_3" rev="1.2.0" conf="test->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-stream-testkit_3" rev="1.2.0" conf="test->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-actor-testkit-typed_3" rev="1.2.0" conf="test->default(runtime)"> </dependency>
+    <dependency org="org.apache.pekko" name="pekko-serialization-jackson_3" rev="1.2.0" conf="test->default(runtime)"> </dependency>
+    <dependency org="ch.qos.logback" name="logback-classic" rev="1.3.15" conf="test->default(runtime)"> </dependency>
+    <dependency org="org.scalatest" name="scalatest_3" rev="3.2.19" conf="test->default(runtime)"> </dependency>
+  </dependencies>
+</ivy-module>

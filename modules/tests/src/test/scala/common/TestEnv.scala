@@ -31,11 +31,18 @@ object TestEnv {
     "PEKKO_NUMBER_OF_SHARDS" -> "100",
     "PASSIVATE_IDLE_ENTITY_AFTER" -> "15 minutes",
     "PROJECTION_DISPATCHER_FIXED_POOL_SIZE" -> "8",
+    "WALLET_PROJECTION_INSTANCES" -> "1",
     "WRITE_PERSISTENCE_DISPATCHER_FIXED_POOL_SIZE" -> "256",
     "R2DBC_POOL_MAX_SIZE" -> "256",
     "R2DBC_POOL_INITIAL_SIZE" -> "64",
     "READ_R2DBC_POOL_MAX_SIZE" -> "256",
     "READ_R2DBC_POOL_INITIAL_SIZE" -> "64",
+    "PROJECTION_R2DBC_POOL_MAX_SIZE" -> "256",
+    "PROJECTION_R2DBC_POOL_INITIAL_SIZE" -> "64",
+    "EVENTS_BATCH_WRITE_WINDOW" -> "2ms",
+    "EVENTS_BATCH_PARALLELISM" -> "8",
+    "EVENTS_BATCH_MAX_REQUESTS" -> "200",
+    "EVENTS_BATCH_QUEUE_SIZE" -> "100000",
     "HTTP_SERVER_BACKLOG" -> "8192",
     "HTTP_SERVER_MAX_CONNECTIONS" -> "65536",
     "HTTP_SERVER_HTTP2_MAX_CONCURRENT_STREAMS" -> "1024",
@@ -47,13 +54,20 @@ object TestEnv {
     "HTTP_DISPATCHER_PARALLELISM_FACTOR" -> "3.0",
     "HTTP_DISPATCHER_PARALLELISM_MAX" -> "64",
     "HTTP_DISPATCHER_THROUGHPUT" -> "200",
-    // Disable OpenTelemetry exporters in tests — the autoconfigure SDK
-    // defaults to `otlp` against localhost:4317, which floods logs with
-    // ConnectException when no collector is running.
-    "OTEL_TRACES_EXPORTER" -> "none",
-    "OTEL_METRICS_EXPORTER" -> "none",
-    "OTEL_LOGS_EXPORTER" -> "none",
-    "OTEL_SDK_DISABLED" -> "true"
+    // Disable OpenTelemetry in tests — the autoconfigure SDK otherwise
+    // defaults to the `otlp` exporter against localhost:4317, flooding logs
+    // with ConnectException when no collector is running.
+    //
+    // These MUST use the dot-notation property names the autoconfigure SDK
+    // reads from *system properties*. It normalizes env vars by replacing `_`
+    // with `.` (OTEL_SDK_DISABLED -> otel.sdk.disabled) but normalizes system
+    // properties by replacing only `-` with `.`, so a system property named
+    // `OTEL_SDK_DISABLED` resolves to `otel_sdk_disabled` and is silently
+    // ignored — leaving the SDK on its default otlp exporter.
+    "otel.sdk.disabled" -> "true",
+    "otel.traces.exporter" -> "none",
+    "otel.metrics.exporter" -> "none",
+    "otel.logs.exporter" -> "none"
   )
 
   private def missing(s: String): Boolean = Option(s).forall(_.isBlank)

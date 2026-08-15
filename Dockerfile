@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1.7
 #
-FROM ghcr.io/graalvm/native-image-community:25-muslib-ol9 AS builder
+# Oracle GraalVM (GFTC license) - required for the G1 GC (G1 is NOT available in Community Edition).
+# Non-musl image: G1 is glibc-based, so the binary is mostly-static (glibc) rather than fully-static musl.
+FROM container-registry.oracle.com/graalvm/native-image:25-ol9 AS builder
 
 RUN microdnf install -y git zip unzip \
     && microdnf clean all
@@ -31,9 +33,10 @@ RUN --mount=type=cache,target=/root/.sbt \
     ./sbtx -Dsbt.color=false "GraalVMNativeImage / packageBin"
 
 # Final image
-FROM scratch AS runtime
+# G1 produces a glibc-linked (mostly-static) binary, so the runtime image MUST provide glibc.
+FROM gcr.io/distroless/base-debian12 AS runtime
 
-# Copy CA Certificates to allow HTTPS requests (scratch doesn't have them)
+# Copy CA Certificates from the builder to allow HTTPS requests (keeps the builder's trust store)
 COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/tls/certs/ca-bundle.crt
 COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt
 

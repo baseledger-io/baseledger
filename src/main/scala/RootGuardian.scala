@@ -10,8 +10,6 @@ import org.apache.pekko.actor.typed.scaladsl.adapter.*
 import org.apache.pekko.actor.typed.{ ActorSystem, Behavior, Scheduler }
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ClusterSharding
 import org.apache.pekko.http.scaladsl.server.Route
-import org.apache.pekko.pattern.gracefulStop
-import org.apache.pekko.projection.ProjectionBehavior
 import org.apache.pekko.util.Timeout
 
 import app.RootGuardian.RootCommand.Start
@@ -45,12 +43,14 @@ object RootGuardian:
     val sessionProvider = R2dbcSessionProvider(context.system, "read-side-connection-factory")
     context.log.info("RootGuardian: R2DBC session provider initialized.")
 
-    // Start Projection
-    val projectionDispatcher = DispatcherSelector.fromConfig("projection-dispatcher")
+    // Start the read-model projection as a ShardedDaemonProcess of N supervised
+    // workers, each owning a contiguous slice range (see WalletProjection.init).
+    // Pekko keeps every worker alive and handles graceful stop on shutdown, so
+    // there is no manual spawn/threading to maintain. N is configured by
+    // `wallet-projection.number-of-instances` (env WALLET_PROJECTION_INSTANCES).
     val databaseReaderDispatcher = DispatcherSelector.fromConfig("database-reader-dispatcher")
-    val projectionBehavior = WalletProjection.createBehavior(context.system)
-    val walletProjectionRef = context.spawn(projectionBehavior, "wallet-projection", projectionDispatcher)
-    context.log.info("RootGuardian: Projection spawned.")
+    WalletProjection.init(context.system)
+    context.log.info("RootGuardian: wallet projection (ShardedDaemonProcess) initialized.")
 
     // Hold-expiration dispatcher (cluster singleton, polls + sends ReleaseTokens)
     HoldExpirationDispatcher.init(context.system, sessionProvider, sharding, databaseReaderDispatcher)
@@ -68,12 +68,10 @@ object RootGuardian:
 
     val shutdown = CoordinatedShutdown(context.system)
 
-    shutdown.addTask(CoordinatedShutdown.PhaseBeforeServiceUnbind, "stop-wallet-projection") { () =>
-      gracefulStop(walletProjectionRef.toClassic, 10.seconds, ProjectionBehavior.Stop).map(_ => Done)
-    }
-
     // Give the dispatcher's in-flight pipeToSelf a moment to complete
     // before sharding shuts down. Singleton stop itself is automatic.
+    // The wallet projection is a ShardedDaemonProcess: cluster sharding stops its
+    // workers and delivers ProjectionBehavior.Stop automatically on shutdown.
     shutdown.addTask(CoordinatedShutdown.PhaseServiceStop, "drain-hold-expiration-dispatcher") { () =>
       org.apache.pekko.pattern.after(2.seconds)(Future.successful(Done))(using context.system.classicSystem)
     }

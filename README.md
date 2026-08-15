@@ -194,6 +194,18 @@ To build the highly optimized GraalVM standalone binary:
 ./sbtx "GraalVMNativeImage / packageBin"
 ```
 
+The image is a **static** executable linked against musl libc, so `native-image`
+needs a compiler named `x86_64-linux-musl-gcc` on `PATH`. That's present in the
+Docker build image but usually not on a glibc host. On a machine with Nix, use
+the helper script, which provisions a musl toolchain (and a musl-built static
+zlib) from the Nix binary cache and then runs the build:
+
+```bash
+./scripts/build-native-local.sh
+```
+
+The result is `target/graalvm-native-image/baseledger` (statically linked, musl).
+
 ---
 
 _Built for the next generation of autonomous AI applications._

@@ -1,6 +1,17 @@
 {
   "reflection": [
     {
+      "type": "io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.sun.management.OperatingSystemMXBean",
       "methods": [
         {
@@ -2561,6 +2572,9 @@
       ]
     },
     {
+      "type": "org.apache.pekko.cluster.sharding.typed.ShardedDaemonProcessSettings"
+    },
+    {
       "type": "org.apache.pekko.cluster.sharding.typed.ShardingEnvelope"
     },
     {
@@ -2581,6 +2595,29 @@
       ]
     },
     {
+      "type": "org.apache.pekko.cluster.sharding.typed.internal.ShardedDaemonProcessImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.pekko.actor.typed.ActorSystem"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.apache.pekko.cluster.sharding.typed.internal.ShardedDaemonProcessImpl$KeepAlivePinger"
+    },
+    {
+      "type": "org.apache.pekko.cluster.sharding.typed.internal.ShardedDaemonProcessImpl$MessageExtractor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.apache.pekko.cluster.sharding.typed.internal.ShardingSerializer",
       "methods": [
         {
@@ -2590,6 +2627,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "org.apache.pekko.cluster.sharding.typed.javadsl.ShardedDaemonProcess"
+    },
+    {
+      "type": "org.apache.pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess"
     },
     {
       "type": "org.apache.pekko.cluster.singleton.ClusterSingletonManager$Internal$OldestChangedBuffer",
@@ -3244,6 +3287,18 @@
     },
     {
       "type": "org.apache.pekko.persistence.r2dbc.journal.R2dbcJournal",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.typesafe.config.Config",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.apache.pekko.persistence.r2dbc.journal.StreamBatchedWriteJournal",
       "methods": [
         {
           "name": "<init>",

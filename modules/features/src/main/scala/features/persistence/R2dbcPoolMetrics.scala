@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory
 
 /**
  * Registers async gauges that expose the live state of the R2DBC connection
- * pools (`write` = journal/snapshot, `read` = projection / HTTP GET / health).
+ * pools (`write` = journal/snapshot, `read` = HTTP GET / health,
+ * `projection` = wallet read-model upserts + offset commits).
  *
  * ==Why==
  * A thread dump cannot tell whether a pool is the throughput cap: the pool is a
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory
  * > 0 under load while writes plateau, the pool (`max-size`) is the bottleneck;
  * if it stays ~0, the pool is exonerated and the cap is upstream.
  *
- * ==Gauges== (each tagged `pool="write"|"read"`)
+ * ==Gauges== (each tagged `pool="write"|"read"|"projection"`)
  *   - `r2dbc_pool_acquired`       connections currently checked out
  *   - `r2dbc_pool_idle`           established but idle connections
  *   - `r2dbc_pool_allocated`      total established connections
@@ -39,7 +40,8 @@ object R2dbcPoolMetrics:
   /** Config path -> `pool` attribute label. Paths match [[event-journal.conf]]. */
   private val PoolPaths: List[(String, String)] = List(
     "pekko.persistence.r2dbc.connection-factory" -> "write",
-    "read-side-connection-factory" -> "read"
+    "read-side-connection-factory" -> "read",
+    "projection-connection-factory" -> "projection"
   )
 
   def register(otel: OpenTelemetry)(using system: ActorSystem[?]): Unit =
